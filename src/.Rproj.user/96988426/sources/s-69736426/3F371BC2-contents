@@ -1,0 +1,263 @@
+---
+title: "Autism-Part1"
+author: "chenhy"
+date: "2020/6/25"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r library packages, message=FALSE, warning=FALSE, include=FALSE}
+library(NetBID2)
+library(tidyverse)
+library(stringr)
+library(VennDiagram)
+library(grid)
+library(futile.logger)
+```
+# Find drivers in autism by using NetBID2
+## Get significantly up/down regulated genes and drivers
+GSE_info:
+
+```{r get_gse_info, echo=FALSE}
+gse_info <- openxlsx::read.xlsx("/cluster/home/chenhy/project/neuron_drivers_landscape/data/Autism_info.xlsx",1)
+gse_info_select <- gse_info[which(gse_info$GSE_code %in% c("GSE113834","GSE102741","GSE64018")),c("GSE_code","GPL","Study.type","Case","Control","Age","Race","Tissue")]
+knitr::kable(gse_info_select,format = "html",row.names = F) %>% kable_styling(full_width = T)
+```
+
+## Data pre-processing
+The path of pre-processing cede is /cluster/home/chenhy/project/neuron_drivers_landscape/src  
+The path of QC plot is /cluster/home/chenhy/project/neuron_drivers_landscape/data/{GSE_name}/QC
+```{r pre-processing, echo=TRUE, message=FALSE, warning=FALSE}
+###### Step 1: Load in gene expression datasets for network construction (exp-load)
+#### Download expression dataset from GEO, need to provide GSE ID and GPL ID
+### Remove duplicated data & # ID conversion using transfer_tab
+
+###### Step 2: Normalization for the expression dataset (exp-QC)
+#### Firstly, view missing values for rows and columns
+#### Secondly, the log2 transformation.
+#### Thirdly, the quantile normalization across samples.
+#### Fourthly, filter out genes with very low expression values (bottom 5%) in most samples (more than 90%).
+
+###### Step 3: Cluster analysis using Kmean and plot result using PCA biplot (pca+kmeans in 2D)
+##### Finding confounding factors and remove batch effect
+
+###### Step 4: Get differential expression (DE) / differential activity (DA) for drivers (act-DA) 
+```
+Get regulated drivers:
+
+```{r get_drivers, message=FALSE, warning=FALSE}
+## input GSE data
+gse_list <- list()
+for (i in 1:nrow(gse_info_select)) {
+  project_main_dir <- "/cluster/home/chenhy/project/neuron_drivers_landscape/data/"
+  project_name <- sprintf('Autism_%s_%s',gse_info_select[i,"GSE_code"],gse_info_select[i,"GPL"])
+  analysis.par <- list()
+  analysis.par$out.dir.DATA <- file.path(project_main_dir,project_name,"DATA/")
+  NetBID.loadRData(analysis.par=analysis.par,step='ms-tab')
+  gse_list[[gse_info_select[i,"GSE_code"]]] <-  analysis.par
+  rm(analysis.par)
+}
+```
+
+
+### PCA for GSE113834 cal.eset
+Data processing details: 数据已矫正批次效应
+```{r pca_GSE113834_cal.eset, echo=FALSE, message=FALSE, warning=FALSE,fig.width=9}
+analysis.par <- gse_list[["GSE113834"]]
+phe <- pData(analysis.par$cal.eset)
+mat <- exprs(analysis.par$cal.eset)
+intgroup <- c("group")
+draw.emb.kmeans(mat=mat,all_k = NULL,obs_label=get_obs_label(phe,intgroup),verbose=FALSE)
+```
+
+### PCA for GSE113834 merge.ac.eset
+Data processing details: 数据已矫正批次效应
+```{r pca_GSE113834_merge.ac.eset, echo=FALSE, message=FALSE, warning=FALSE,fig.width=9}
+analysis.par <- gse_list[["GSE113834"]]
+phe <- pData(analysis.par$merge.ac.eset)
+mat <- exprs(analysis.par$merge.ac.eset)
+intgroup <- c("group")
+draw.emb.kmeans(mat=mat,all_k = NULL,obs_label=get_obs_label(phe,intgroup),verbose=FALSE)
+```
+
+### PCA for GSE102741 cal.eset
+Data processing details: 数据未矫正批次效应，但根据原文分析代码，寻找差异基因时已矫正批次效应
+```{r pca_GSE102741_cal.eset, echo=FALSE, message=FALSE, warning=FALSE,fig.width=9}
+analysis.par <- gse_list[["GSE102741"]]
+phe <- pData(analysis.par$cal.eset)
+mat <- exprs(analysis.par$cal.eset)
+intgroup <- c("diagnosis")
+draw.emb.kmeans(mat=mat,all_k = NULL,obs_label=get_obs_label(phe,intgroup),verbose=FALSE)
+```
+
+### PCA for GSE102741 merge.ac.eset
+Data processing details: 数据未矫正批次效应，但根据原文分析代码，寻找差异基因时已矫正批次效应
+```{r pca_GSE102741_merge.ac.eset, echo=FALSE, message=FALSE, warning=FALSE,fig.width=9}
+analysis.par <- gse_list[["GSE102741"]]
+phe <- pData(analysis.par$merge.ac.eset)
+mat <- exprs(analysis.par$merge.ac.eset)
+intgroup <- c("diagnosis")
+draw.emb.kmeans(mat=mat,all_k = NULL,obs_label=get_obs_label(phe,intgroup),verbose=FALSE)
+```
+
+### PCA for GSE64018 cal.eset
+Data processing details: 根据原文表述数据可能已矫正批次效应
+```{r pca_GSE64018_cal.eset, echo=F, message=FALSE, warning=FALSE,fig.width=9}
+analysis.par <- gse_list[["GSE64018"]]
+phe <- pData(analysis.par$cal.eset)
+mat <- exprs(analysis.par$cal.eset)
+intgroup <- c("diagnosis")
+draw.emb.kmeans(mat=mat,all_k = NULL,obs_label=get_obs_label(phe,intgroup),verbose=FALSE)
+```
+
+### PCA for GSE64018 merge.ac.eset 
+Data processing details: 根据原文表述数据可能已矫正批次效应
+```{r pca_GSE64018_merge.ac.eset, echo=F, message=FALSE, warning=FALSE,fig.width=9}
+analysis.par <- gse_list[["GSE64018"]]
+phe <- pData(analysis.par$merge.ac.eset)
+mat <- exprs(analysis.par$merge.ac.eset)
+intgroup <- c("diagnosis")
+draw.emb.kmeans(mat=mat,all_k = NULL,obs_label=get_obs_label(phe,intgroup),verbose=FALSE)
+```
+
+
+## Expression level
+## Plot Venn graph
+Significantly different expression genes as a proportion of all genes
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+source("get_sig_genes.R")
+sprintf("%s:%s",names(gse_list)[1],round(nrow(gse113834_all_gene)/nrow(gse_list[[1]]$DE$ASD.Vs.TD),3))
+sprintf("%s:%s",names(gse_list)[2],round(nrow(gse102741_all_gene)/nrow(gse_list[[2]]$DE$ASD.Vs.TD),3))
+sprintf("%s:%s",names(gse_list)[3],round(nrow(gse64018_all_gene)/nrow(gse_list[[3]]$DE$ASD.Vs.TD),3))
+```
+
+
+## The overlap of differential protein-conding genes in the three raw datasets
+
+```{r venn_raw_data, echo=FALSE, message=FALSE, warning=FALSE, fig.height=6, fig.width=6}
+source("Venn_raw_data_protein_coding.R")
+```
+
+## The overlap of differential protein-conding genes in the three datasets that has been removed 0 value
+
+```{r venn_remove0_data, echo=FALSE, message=FALSE, warning=FALSE, fig.height=6, fig.width=6}
+source("Venn_remove0_data_protein_coding.R")
+```
+
+## The overlap of differential genes in the three datasets is shown below  
+
+Up genes
+```{r venn_up, echo=FALSE, message=FALSE, warning=FALSE, fig.height=6, fig.width=6}
+source("VennDiagram_gene_up.R")
+```
+
+Down genes
+```{r venn_down, echo=FALSE, message=FALSE, warning=FALSE, fig.height=6, fig.width=6}
+source("VennDiagram_gene_down.R")
+```
+
+## Plot pheatmap of overlaps genes of GSE113834 and GSE102741
+
+### The expression of up/down regulated genes in GSE113834
+```{r pheatmap_up_GSE113834, echo=FALSE, message=FALSE, warning=FALSE}
+source("pheatmap_function_DE.R") #source the function for ploting pheatmap
+A <- gse113834_all_gene$ID
+B <- gse102741_all_gene$ID
+C <- gse64018_all_gene$ID
+intersect_gene <- Reduce(union,list(v1=intersect(A,C),
+                                    v2=intersect(A,B),
+                                    v3=intersect(B,C)))
+gse113834_DE <- gse_list[["GSE113834"]]$DE$ASD.Vs.TD %>% .[which(.$ID %in% intersect_gene),]
+plot_gse_pheatmap_DE(gse = gse_list[["GSE113834"]], gse_DE = gse113834_DE, status = "up/down", use_phe = c("group"))
+```
+### The expression of up/down regulated genes in GSE64018
+```{r pheatmap_up_GSE64018, echo=FALSE, message=FALSE, warning=FALSE}
+gse64018_DE <- gse_list[["GSE64018"]]$DE$ASD.Vs.TD %>% .[which(.$ID %in% intersect(A,C)),]
+plot_gse_pheatmap_DE(gse = gse_list[["GSE64018"]], gse_DE = gse64018_DE, status = "up/down", use_phe = c("diagnosis"))
+```
+
+### The expression of up/down regulated genes in GSE102741
+```{r pheatmap_up_GSE102741, echo=FALSE, message=FALSE, warning=FALSE}
+gse102741_DE <- gse_list[["GSE102741"]]$DE$ASD.Vs.TD %>% .[which(.$ID %in% intersect(A,B)),]
+plot_gse_pheatmap_DE(gse = gse_list[["GSE102741"]], gse_DE = gse102741_DE, status = "up/down", use_phe = c("diagnosis"))
+```
+
+## Intersection with public reported genes
+check the intersection of up/down with public reported autism related genes in DisGenet
+```{r check intersection up, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+disgenet_gene <- read.table(file = "/cluster/home/chenhy/project/neuron_drivers_landscape/data/C1510586_disease_gda_summary.tsv",sep = "\t",quote = "",header = T,stringsAsFactors = F)
+sfari_gene <- read.csv("/cluster/home/chenhy/project/neuron_drivers_landscape/data/SFARI-Gene_genes_05-19-2020release_06-30-2020export.csv",stringsAsFactors = F)
+
+disgenet_gene <- disgenet_gene[which(disgenet_gene$Gene %in% intersect_gene),]
+sfari_gene <- sfari_gene[which(sfari_gene$gene.symbol %in% intersect_gene),]
+sprintf("The number of DisGenet reported gene in the overlap of GSE113834 with GSE64018 is %s, mean Score_gda equals %s",nrow(disgenet_gene),round(mean(disgenet_gene$Score_gda),3))
+```
+
+```{r check intersection down, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+sprintf("The number of SFari reported gene in the overlap of GSE113834 with GSE64018 is %s, mean Score_gda equals %s",nrow(sfari_gene),round(mean(sfari_gene$gene.score,na.rm=T),3))
+```
+
+Find the number of remaining genes for which there is already relevant literature by pubmed
+```{r easyPubMed}
+if(exists("/cluster/home/chenhy/project/neuron_drivers_landscape/data/gene_article1.csv")){
+  gene_article1 <- read.csv("/cluster/home/chenhy/project/neuron_drivers_landscape/data/gene_article1.csv")
+  gene_article1 %>% as.data.frame(table(.$gene)) %>% knitr::kable(.,format = "html",row.names = F) %>% kable_styling(full_width = T)
+}
+```
+
+
+## Activity level
+## Plot Venn graph
+Significantly different drivers as a proportion of all drivers
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+source("get_sig_drivers.R")
+sprintf("%s:%s",names(gse_list)[1],round(nrow(gse113834_all_driver)/nrow(gse_list[[1]]$final_ms_tab),3))
+sprintf("%s:%s",names(gse_list)[2],round(nrow(gse102741_all_driver)/nrow(gse_list[[2]]$final_ms_tab),3))
+sprintf("%s:%s",names(gse_list)[3],round(nrow(gse64018_all_driver)/nrow(gse_list[[3]]$final_ms_tab),3))
+```
+
+## The overlap of drivers in the three datasets is shown below  
+
+Up drivers
+```{r venn_drivers_up, echo=FALSE, message=FALSE, warning=FALSE, fig.height=6, fig.width=6}
+source("VennDiagram_drivers_up.R")
+```
+
+Down drivers
+```{r venn_drivers_down, echo=FALSE, message=FALSE, warning=FALSE, fig.height=6, fig.width=6}
+source("VennDiagram_drivers_down.R")
+```
+
+## Plot pheatmap of overlaps drivers of GSE113834 and GSE64018
+
+### The activity of up/down regulated drivers in GSE113834
+```{r pheatmap_GSE113834_ac, echo=FALSE, message=FALSE, warning=FALSE}
+source("pheatmap_function_DA.R")
+A <- gse113834_all_driver$originalID_label
+B <- gse102741_all_driver$originalID_label
+C <- gse64018_all_driver$originalID_label
+intersect_driver <- Reduce(union,list(v1=intersect(A,C),
+                                      v2=intersect(A,B),
+                                      v3=intersect(B,C)))
+gse113834_DA <- gse_list[["GSE113834"]]$final_ms_tab %>% .[which(.$originalID_label %in% intersect_driver),]
+plot_gse_pheatmap_DA(gse = gse_list[["GSE113834"]], gse_DA = gse113834_DA, status = "up/down", use_phe = c("group"))
+```
+
+### The activity of up/down regulated drivers in GSE64018
+```{r pheatmap_GSE64018_ac, echo=FALSE, message=FALSE, warning=FALSE}
+gse64018_DA <- gse_list[["GSE64018"]]$final_ms_tab %>% .[which(.$originalID_label %in% intersect(A,C)),]
+plot_gse_pheatmap_DA(gse = gse_list[["GSE64018"]], gse_DA = gse64018_DA, status = "up/down", use_phe = c("diagnosis"))
+```
+
+### The activity of up/down regulated drivers in GSE102741
+```{r pheatmap_GSE102741_ac, echo=FALSE, message=FALSE, warning=FALSE}
+gse102741_DA <- gse_list[["GSE102741"]]$final_ms_tab %>% .[which(.$originalID_label %in% intersect(A,B)),]
+plot_gse_pheatmap_DA(gse = gse_list[["GSE102741"]], gse_DA = gse102741_DA, status = "up/down", use_phe = c("diagnosis"))
+```
+
+
+
+

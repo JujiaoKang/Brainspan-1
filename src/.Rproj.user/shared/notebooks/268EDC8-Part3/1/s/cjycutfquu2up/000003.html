@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>body{background-color:white;}</style>
+<script src="lib/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="lib/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
+<script src="lib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="lib/kePrint-0.0.1/kePrint.js"></script>
+
+</head>
+<body>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Dis_variant </th>
+   <th style="text-align:right;"> p </th>
+   <th style="text-align:right;"> case_n </th>
+   <th style="text-align:right;"> control_n </th>
+   <th style="text-align:right;"> Case_percentage </th>
+   <th style="text-align:right;"> Control_percentage </th>
+   <th style="text-align:right;"> Odds_ratio </th>
+   <th style="text-align:left;"> Oddds_ratio_CI </th>
+   <th style="text-align:right;"> Percentage_of_sig_from_permutation </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> SMPD1:NM_000543:exon2:c.558delinsGC(p.K189Qfs*4) </td>
+   <td style="text-align:right;"> 0.00e+00 </td>
+   <td style="text-align:right;"> 8 </td>
+   <td style="text-align:right;"> 867 </td>
+   <td style="text-align:right;"> 0.07273 </td>
+   <td style="text-align:right;"> 0.0867 </td>
+   <td style="text-align:right;"> 0.12 </td>
+   <td style="text-align:left;"> [0.06-0.23] </td>
+   <td style="text-align:right;"> 1.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> TSPEAR:NM_144991:exon1:c.82+14041C&gt;G </td>
+   <td style="text-align:right;"> 0.00e+00 </td>
+   <td style="text-align:right;"> 8 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0.07273 </td>
+   <td style="text-align:right;"> 0.0002 </td>
+   <td style="text-align:right;"> 55.53 </td>
+   <td style="text-align:left;"> [11.77-262.02] </td>
+   <td style="text-align:right;"> 1.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> DPP6:NM_130797:exon1:c.109G&gt;A(p.G37S) </td>
+   <td style="text-align:right;"> 0.00e+00 </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 0.06364 </td>
+   <td style="text-align:right;"> 0.0001 </td>
+   <td style="text-align:right;"> 97.05 </td>
+   <td style="text-align:left;"> [11.92-789.95] </td>
+   <td style="text-align:right;"> 1.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> EYS:NM_001142800:exon12:c.1767-8434C&gt;T </td>
+   <td style="text-align:right;"> 6.00e-07 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 0.05455 </td>
+   <td style="text-align:right;"> 0.0001 </td>
+   <td style="text-align:right;"> 83.07 </td>
+   <td style="text-align:left;"> [9.99-690.95] </td>
+   <td style="text-align:right;"> 1.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ERLIN2:XM_005273391:exon1:c.142G&gt;A </td>
+   <td style="text-align:right;"> 1.70e-06 </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 0.06364 </td>
+   <td style="text-align:right;"> 0.0004 </td>
+   <td style="text-align:right;"> 24.26 </td>
+   <td style="text-align:left;"> [7.08-83.06] </td>
+   <td style="text-align:right;"> 1.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> BBS2:NM_001324357:exon10:c.1111_1113del </td>
+   <td style="text-align:right;"> 3.80e-06 </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 0.06364 </td>
+   <td style="text-align:right;"> 0.0005 </td>
+   <td style="text-align:right;"> 19.40 </td>
+   <td style="text-align:left;"> [6.14-61.29] </td>
+   <td style="text-align:right;"> 1.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> CEL:NM_001807:exon11:c.1966G&gt;C(p.A656P) </td>
+   <td style="text-align:right;"> 3.90e-06 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 257 </td>
+   <td style="text-align:right;"> 0.01818 </td>
+   <td style="text-align:right;"> 0.0257 </td>
+   <td style="text-align:right;"> 0.10 </td>
+   <td style="text-align:left;"> [0.03-0.42] </td>
+   <td style="text-align:right;"> 1.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> RP1L1:NM_178857:exon2:c.331A&gt;G(p.K111E) </td>
+   <td style="text-align:right;"> 6.10e-06 </td>
+   <td style="text-align:right;"> 8 </td>
+   <td style="text-align:right;"> 9 </td>
+   <td style="text-align:right;"> 0.07273 </td>
+   <td style="text-align:right;"> 0.0009 </td>
+   <td style="text-align:right;"> 12.33 </td>
+   <td style="text-align:left;"> [4.74-32.06] </td>
+   <td style="text-align:right;"> 1.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> OGDH:NM_002541:exon2:c.-27-7_-27-6del </td>
+   <td style="text-align:right;"> 1.16e-05 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 295 </td>
+   <td style="text-align:right;"> 0.03636 </td>
+   <td style="text-align:right;"> 0.0295 </td>
+   <td style="text-align:right;"> 0.18 </td>
+   <td style="text-align:left;"> [0.07-0.49] </td>
+   <td style="text-align:right;"> 1.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> DMPK:NM_001081563:exon14:c.*260_*283del </td>
+   <td style="text-align:right;"> 1.19e-05 </td>
+   <td style="text-align:right;"> 15 </td>
+   <td style="text-align:right;"> 47 </td>
+   <td style="text-align:right;"> 0.13636 </td>
+   <td style="text-align:right;"> 0.0047 </td>
+   <td style="text-align:right;"> 4.46 </td>
+   <td style="text-align:left;"> [2.48-8.01] </td>
+   <td style="text-align:right;"> 0.99 </td>
+  </tr>
+</tbody>
+</table>
+</body>
+</html>

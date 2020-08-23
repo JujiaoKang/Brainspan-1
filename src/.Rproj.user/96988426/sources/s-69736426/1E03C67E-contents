@@ -1,0 +1,52 @@
+library(sva)
+library(limma)
+
+load("/cluster/home/chenhy/project/neuron_drivers_landscape/src/Autism_GSE102741_GPL11154/Wright_2017_ASD_Histamine//Wright_ASD_Hist_Data.rda")#load the log2(RPKM +1) count data and demographic/technical info for subjects
+load("/cluster/home/chenhy/project/neuron_drivers_landscape/src/Autism_GSE102741_GPL11154/Wright_2017_ASD_Histamine/genesets.rda")# load the gene sets of interest
+
+exprsGeneIndex = which(rowMeans(geneRpkm2) > .5) #Threshold for expression
+geneRpkm2 = geneRpkm2[exprsGeneIndex,]#filtering out lowly expressed genes
+
+modDx=model.matrix(~Pheno$Dx +Pheno$RIN +Pheno$age +Pheno$Race +Pheno$Sex +Pheno$assignment)#model to pass to num.sv to determine the number of PCs to include in the model-- when explicitly modeling these variables
+yGene<-as.matrix(geneRpkm2)#gene counts need to be in a matrix
+k = num.sv(yGene, modDx)#passing our data and model to the num.sv function of the bioconductor package sva to determine the number of PCs sig contributing to overall variance
+PCA<-prcomp(t(yGene))# getting the PCs
+
+#Differential Expression Analysis
+modDx=model.matrix(~Pheno$Dx +Pheno$RIN +Pheno$age +Pheno$Sex +Pheno$Race +Pheno$assignment+PCA$x[,1:k])# model for differential expression analysis
+fitDx = lmFit(yGene, modDx)#applying the model to the gene expression data
+ebDx = eBayes(fitDx)#applying empirical Bayes method to the fit
+Diag_withCov_out2<- data.frame(log2FC = fitDx$coef[,2], pval = ebDx$p.value[,2], tstat = ebDx$t[,2])#pulling out the interesting stat results
+indexDiagpthresh2 <- which(Diag_withCov_out2$pval <0.05)#threshold of significance
+finalRpkmabove0.5Diag_withCov_siggenes2<-Diag_withCov_out2[indexDiagpthresh2,]#make a new data frame of just sig results before multiple testing correction
+dim(finalRpkmabove0.5Diag_withCov_siggenes2)#number of genes sig before multiple testing correction
+##Multiple Testing Correction:
+BHgenep<-p.adjust(Diag_withCov_out2$pval, method = "BH")# apply Benjamini Hochberg method for multiple testing correction on the full list of filtered genes
+geneBHout<-data.frame(Diag_withCov_out2, q_value = BHgenep)# create dataframe of all stats info together
+indexDiagpthresh2 <- which(geneBHout$q_value <0.05)#threshold of significance
+finalgeneBHout<-geneBHout[indexDiagpthresh2,]#make a new data frame of just sig results after multiple testing correction
+dim(finalgeneBHout)#number of genes sig after multiple testing correction
+finalgeneBHout# show the gene by gene differential expression analysis results
+
+
+#Gene Set Analysis
+histindex <-which(rownames(Diag_withCov_out2) =="ENSG00000150540" | rownames(Diag_withCov_out2) == "ENSG00000196639" | rownames(Diag_withCov_out2) == "ENSG00000113749" |rownames(Diag_withCov_out2) =="ENSG00000101180"|rownames(Diag_withCov_out2) =="ENSG00000134489")#Find the indexes for the expression data for the genes of interest
+res1<-as.data.frame(roast(y = yGene, index = histindex, design = fitDx$design, contrast = 2, nrot = 10000))#Hypothesis driven gene set test
+histindex <-which(rownames(Diag_withCov_out2) == "ENSG00000196639" | rownames(Diag_withCov_out2) == "ENSG00000113749" |rownames(Diag_withCov_out2) =="ENSG00000101180" |rownames(Diag_withCov_out2) =="ENSG00000134489")#Find the indexes for the expression data for the genes of interest
+res2<-as.data.frame(roast(y = yGene, index = histindex, design = fitDx$design, contrast = 2, nrot = 10000))#GO: Histamine receptor activity gene set test
+histindex <-which(rownames(Diag_withCov_out2) %in% histaminergic$ensembl_gene_id)#Find the indexes for the expression data for the genes of interest
+res3<-as.data.frame(roast(y = yGene, index = histindex, design = fitDx$design, contrast = 2, nrot = 10000))#harminizome GeneRIF:Histaminergic gene set test
+histindex <-which(rownames(Diag_withCov_out2) %in% harmin2$ensembl_gene_id)#Find the indexes for the expression data for the genes of interest
+res4<-as.data.frame(roast(y = yGene, index = histindex, design = fitDx$design, contrast = 2, nrot = 10000))#harminizome GeneRIF:Histamine gene set test
+histindex <-which(rownames(Diag_withCov_out2) %in% hist_sec$ensembl_gene_id)#Find the indexes for the expression data for the genes of interest
+res5<-as.data.frame(roast(y = yGene, index = histindex, design = fitDx$design, contrast = 2, nrot = 10000))#GO: Histamine Secretion gene set test
+histindex <-which(rownames(Diag_withCov_out2) %in% hist_prod_inflam$ensembl_gene_id)#Find the indexes for the expression data for the genes of interest
+res6<-as.data.frame(roast(y = yGene, index = histindex, design = fitDx$design, contrast = 2, nrot = 10000))#GO: Histamine Production in Inflammation gene set test
+results<-rbind(res1,res2, res3, res4, res5, res6)#put all the results together
+up<-data.frame(results[grep("Up", rownames(results)),])#grab the results for the up hypothesis
+mixed<-data.frame(results[grep("Mixed", rownames(results)),])#grab the results for the mixed hypothesis
+results<-rbind(up, mixed)#combine the results for those based on the hypothesis of up or mixed
+results$qvalue<-p.adjust(results$p.value.P.Value, method = "BH")# apply Benjamini Hochberg method for multiple testing correction
+results # show the gene set test results
+
+#note the results will vary a bit each time because of the ROAST test rotations, can use set.seed() for consistent results

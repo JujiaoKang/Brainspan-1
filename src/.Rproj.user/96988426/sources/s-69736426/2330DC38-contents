@@ -1,0 +1,189 @@
+library(NetBID2)
+library(stringr)
+library(tidyverse)
+##1 Create DESeqDataSet
+load("/cluster/home/chenhy/project/wanghj/data/SATB2_txi.RData") # Import txi object
+# Import Brainspan analysis
+if(T){
+project_main_dir <- '/cluster/home/chenhy/project/wanghj/data' 
+project_name <- "analysis" 
+network.dir <- sprintf("/cluster/home/chenhy/project/wanghj/data/%s",project_name) # use demo network in the package
+network.project.name <- 'prenatal'
+analysis.par  <- NetBID.analysis.dir.create(project_main_dir=project_main_dir, project_name=project_name,
+                                            network_dir=network.dir, network_project_name=network.project.name)
+analysis.par$out.dir.DATA <- "/cluster/home/chenhy/project/wanghj/data/analysis/DATA/"
+NetBID.loadRData(analysis.par=analysis.par,step='act-get')}
+# Make sample_info
+condition <- factor(c('wt','het','het','het','hom','hom','hom','wt','wt'))
+sample_info <- data.frame(row.names = c('ctr_wt','Het_01','Het_02',
+                                        'Het_03','Hom_01','Hom_02',
+                                        'satb2_mt','WT_01','WT_02'),
+                          condition=condition,stringsAsFactors=FALSE) 
+
+ddsTxi <- DESeqDataSetFromTximport(txi,
+                                   colData = sample_info,
+                                   design = ~ condition)
+## 1.1 rlog和方差齐性转换
+rld <- rlog(ddsTxi, blind = FALSE)
+## 1.2 评估样本间的总体相似度
+# method 1
+sampleDists <- dist(t(assay(rld)))
+library("pheatmap")
+library("RColorBrewer")
+sampleDistMatrix <- as.matrix( sampleDists )
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows = sampleDists,
+         clustering_distance_cols = sampleDists,
+         col = colors)
+# method 2
+plotPCA(rld,intgroup=c("condition"))
+
+##2 gene ID conversion
+#mouse <- useMart("ensembl",dataset = "mmusculus_gene_ensembl") #head(listAttributes(mouse))
+transfer_tab1 <- get_IDtransfer(from_type = 'ensembl_gene_id_version',
+                               to_type='external_gene_name',
+                               use_genes=rownames(assay(ddsTxi)),
+                               dataset='mmusculus_gene_ensembl',
+                               ignore_version=TRUE)
+colnames(transfer_tab1) <- c("ensembl_gene_id","external_gene_name_MOUSE","ensembl_gene_id_version")
+transfer_tab2 <- get_IDtransfer_betweenSpecies(from_spe='mouse',
+                                              to_spe='human',
+                                              from_type = 'external_gene_name',
+                                              to_type='external_gene_name',
+                                              use_genes=transfer_tab1$external_gene_name)
+rownames(transfer_tab1) <- transfer_tab1$ensembl_gene_id_version
+##3 different expression analysis
+ddsTxi$condition <- relevel(ddsTxi$condition, ref = "wt")
+ddsTxi <- DESeq(ddsTxi);resultsNames(ddsTxi)
+res1 <- results(ddsTxi,contrast = c("condition","het","wt"));summary(res1)
+res2 <- results(ddsTxi,contrast = c("condition","hom","wt"));summary(res2)
+res_list <- list()
+res_list[[1]] <- as.data.frame(res1);res_list[[2]] <- as.data.frame(res2)
+res_list <- lapply(res_list, function(res){
+  res <- res[-which(is.na(res$pvalue)==1 | is.na(res$log2FoldChange)==1),]
+  res <- merge(res,transfer_tab1,by = "row.names")
+  res <- res[!duplicated(res$external_gene_name_MOUSE),]
+})
+save(res_list,file="res.RData")
+##看看特定基因的count数量
+#topGene <- rownames(res1)[which.min(res1$padj)]
+#plotCounts(ddsTxi, gene = topGene, intgroup=c("condition"))
+res <- lfcShrink(ddsTxi, coef = "condition_het_vs_wt", type = "apeglm")
+plotMA(res, ylim = c(-5, 5))
+
+##3 look the expression and activity of SATB2
+#expression
+satb2_phe <- pData(analysis.par$cal.eset)
+satb2_phe$sample_name <- rownames(satb2_phe)
+satb2_ac <- exprs(analysis.par$merge.ac.eset) %>% .[which(str_detect(rownames(.),"GNAI2_SIG")),] %>% melt()
+satb2_expr <- melt(exprs(analysis.par$cal.eset)["GNAI2",])
+for (i in 1:nrow(satb2_expr)) {
+  satb2_expr[i,"week_numeric"] <- satb2_phe[which(satb2_phe$sample_name == i),"week_numeric"]
+  satb2_expr[i,"age"] <- satb2_phe[which(satb2_phe$sample_name == i),"age"]
+  satb2_expr[i,"class1"] <- satb2_phe[which(satb2_phe$sample_name == i),"class1"]
+  satb2_ac[i,"week_numeric"] <- satb2_phe[which(satb2_phe$sample_name == i),"week_numeric"]
+  satb2_ac[i,"age"] <- satb2_phe[which(satb2_phe$sample_name == i),"age"]
+  satb2_ac[i,"class1"] <- satb2_phe[which(satb2_phe$sample_name == i),"class1"]
+}
+satb2_ac$class1 <- factor(satb2_ac$class1,levels = c("Embryo","Prenatal_1st-Trimester","Prenatal_2nd-Trimester","Prenatal_3rd-Trimester","Childhood","Adulthood"))
+satb2_expr$class1 <- factor(satb2_expr$class1,levels = c("Embryo","Prenatal_1st-Trimester","Prenatal_2nd-Trimester","Prenatal_3rd-Trimester","Childhood","Adulthood"))
+satb2_ac$factor_age <- factor(satb2_ac$week_numeric,ordered = F);satb2_ac$age_num <- as.numeric(satb2_ac$factor_age)
+satb2_expr$factor_age <- factor(satb2_expr$week_numeric,ordered = F);satb2_expr$age_num <- as.numeric(satb2_expr$factor_age)
+
+#scatter plot for activity of gene SATB2
+point_plot <- ggplot(data=satb2_ac)+
+  geom_point(aes(x=age_num,y=value,color = class1),size=1.5,alpha=.98)+
+  scale_color_manual(values = c("red","blue","green","purple","orange", "brown"))+
+  geom_smooth(aes(x=age_num,y=value),method='loess',span=0.25,se = T,color = "black",size=0.3)+
+  guides(shape = guide_legend(override.aes = list(size = 2)),color = guide_legend(override.aes = list(size = 2)))+
+  scale_x_continuous(limits=c(min(satb2_ac$age_num),max(satb2_ac$age_num)),breaks=unique(satb2_ac$age_num),labels=unique(satb2_ac$age))+
+  scale_y_continuous(limits=c(min(satb2_ac[,"value"]),max(satb2_ac[,"value"])),breaks=round(seq(min(satb2_ac[,"value"]),max(satb2_ac[,"value"]),length.out=7),1))+
+  labs(x="Age",y="Activity level",title = "Activity level for GNAI2 in brain with different period")+
+  theme(legend.title = element_blank(),legend.position = c(0.85, 0.81),
+        axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(panel.background=element_rect(fill='transparent',color='transparent'),
+        legend.key=element_rect(fill='transparent', color='transparent'),
+        plot.title = element_text(hjust = 0.5),
+        panel.border = element_rect(linetype="solid",fill = "transparent"))
+ggsave(point_plot, file="/cluster/home/chenhy/project/wanghj/result/SATB2_activity_plot.pdf", width=9, height=5.5)
+
+#scatter plot for expression of gene SATB2
+point_plot <- ggplot(data=satb2_expr)+
+  geom_point(aes(x=age_num,y=value,color = class1),size=1.5,alpha=.98)+
+  geom_smooth(aes(x=age_num,y=value),method='loess',span=0.25,se = T,color = "black",size=0.3)+
+  guides(shape = guide_legend(override.aes = list(size = 2)),color = guide_legend(override.aes = list(size = 2)))+
+  scale_x_continuous(limits=c(min(satb2_expr$age_num),max(satb2_expr$age_num)),breaks=unique(satb2_expr$age_num),labels=unique(satb2_expr$age))+
+  scale_y_continuous(limits=c(min(satb2_expr[,"value"]),max(satb2_expr[,"value"])),breaks=round(seq(min(satb2_expr[,"value"]),max(satb2_expr[,"value"]),length.out=7),1))+
+  labs(x="Age",y="Expression level",title = "Expression level for GNAI2 in brain with different period")+
+  theme(legend.title = element_blank(),legend.position = c(0.85, 0.8),
+        axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(panel.background=element_rect(fill='transparent',color='transparent'),
+        legend.key=element_rect(fill='transparent', color='transparent'),
+        plot.title = element_text(hjust = 0.5),
+        panel.border = element_rect(linetype="solid",fill = "transparent"))
+ggsave(point_plot, file="/cluster/home/chenhy/project/wanghj/result/SATB2_expression_plot.pdf", width=9, height=5.5)
+
+##4 plot heatmap
+#get sig_driver
+#res <- res[which(res$contrast == "het_vs_wt"),]
+sig_driver_list <- lapply(res_list,function(res){draw.volcanoPlot(dat=res,label_col='external_gene_name_MOUSE',
+                               logFC_col='log2FoldChange',
+                               Pv_col='pvalue',
+                               logFC_thre=3,
+                               Pv_thre=0.05,
+                               main='Volcano Plot for WT.Vs.others_exp',
+                               show_label=F,
+                               label_type = 'origin',
+                               label_cex = 0.5,
+                               show_plot = T)})
+sig_driver_gene <- union(sig_driver_list[[1]]$external_gene_name_MOUSE,sig_driver_list[[2]]$external_gene_name_MOUSE)
+top_sig_driver_gene <- head(sig_driver_gene,30)
+
+
+#draw heatmap for expression level
+library("genefilter")
+VarGenes <- order(rowVars(assay(rld)), decreasing = TRUE)
+exp_mat  <- assay(rld)[VarGenes, ]
+exp_mat  <- exp_mat - rowMeans(exp_mat)
+use_genes <- unique(transfer_tab1[which(transfer_tab1$external_gene_name_MOUSE %in% top_sig_driver_gene),"ensembl_gene_id_version"])
+pdf('/cluster/home/chenhy/project/wanghj/result/exp_heatmap.pdf',width=10, height=10)
+draw.heatmap(mat=exp_mat,use_genes=use_genes,
+             use_gene_label=transfer_tab1[which(transfer_tab1$ensembl_gene_id_version %in% use_genes),"external_gene_name_MOUSE"],
+             use_samples=colnames(exp_mat),
+             use_sample_label=rownames(sample_info),
+             phenotype_info=sample_info,use_phe=c('condition'),
+             main='Expression level for Top drivers',scale='row',
+             cluster_rows=TRUE,cluster_columns=TRUE,
+             clustering_distance_rows='euclidean',
+             clustering_distance_columns='euclidean',
+             clustering_method_rows = "complete",
+             row_names_gp = gpar(fontsize = 10),
+             show_row_names = TRUE,
+             show_column_names = TRUE,
+             col=circlize::colorRamp2(breaks=seq(-2,2,length.out=10),
+                                      colors=rev(brewer.pal(10,'Spectral'))))
+dev.off()
+
+## draw heatmap for activity level 
+use_genes <- unique(transfer_tab2[which(transfer_tab2$external_gene_name_MOUSE %in% head(sig_driver_gene,120)),"external_gene_name_HUMAN"])
+phe <- pData(analysis.par$merge.ac.eset)
+phe$class1 <- factor(phe$class1,levels = c("Embryo","Prenatal_1st-Trimester","Prenatal_2nd-Trimester","Prenatal_3rd-Trimester","Childhood","Adulthood"))
+ac_mat <- Biobase::exprs(analysis.par$cal.eset)
+pdf('/cluster/home/chenhy/project/wanghj/result/ac_heatmap.pdf',width=10, height=10)
+draw.heatmap(mat=ac_mat,use_genes=use_genes,
+             use_gene_label=use_genes,
+             use_samples=colnames(ac_mat),
+             phenotype_info=phe,use_phe=c('gender','class1'),
+             main='Activity level for Top drivers',scale='row',
+             show_column_names = FALSE,
+             cluster_rows=TRUE,cluster_columns=FALSE,
+             clustering_distance_rows='euclidean',
+             clustering_distance_columns='euclidean',
+             clustering_method_rows = "complete",
+             row_names_gp = gpar(fontsize = 10),
+             show_row_names = TRUE,
+             col=circlize::colorRamp2(breaks=seq(-2,2,length.out=10),
+                                      colors=rev(brewer.pal(10,'Spectral')))
+)
+dev.off()

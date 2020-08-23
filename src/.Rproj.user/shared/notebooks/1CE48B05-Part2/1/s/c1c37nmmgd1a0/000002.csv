@@ -1,0 +1,20 @@
+"0","draw.heatmap(mat=ac_mat,use_genes=use_genes_down,
+             use_gene_label=use_gene_label_down,
+             use_samples=colnames(ac_mat),
+             phenotype_info=phe,use_phe=c('gender','stage'),
+             main='Activity for Top down regulated drivers',scale='row',
+             show_column_names = FALSE,
+             cluster_rows=TRUE,cluster_columns=FALSE,
+             clustering_distance_rows='euclidean',
+             clustering_distance_columns='euclidean',
+             clustering_method_rows = ""complete"",
+             row_names_gp = gpar(fontsize = 10),
+             show_row_names = TRUE,
+             col=circlize::colorRamp2(breaks=seq(-2,2,length.out=10),
+                                      colors=rev(brewer.pal(10,'Spectral')))
+            )
+"
+"1","[1]"
+"1"," TRUE"
+"1","
+"

@@ -1,0 +1,67 @@
+transfer_tab <- read.csv(file = "/cluster/home/chenhy/project/neuron_drivers_landscape/result/transfer_tab.csv")
+load("/cluster/home/chenhy/project/neuron_drivers_landscape/src/Autism_GSE102741_GPL11154/Wright_2017_ASD_Histamine//Wright_ASD_Hist_Data.rda")
+datExpr <- read.table("/cluster/home/chenhy/project/neuron_drivers_landscape/src/Autism_GSE64018_GPL11154/GSE64018_countlevel_12asd_12ctl.txt",sep="\t",header=TRUE)
+datFPM <- sweep(log2(datExpr + 1), 2, log2(apply(datExpr,2,sum)/10^6))
+gse64018_symbol <- unique(transfer_tab[which(transfer_tab$ensembl_gene_id %in% rownames(datFPM)),] %>% .[which(.$gene_biotype=="protein_coding"),] %>% .$external_gene_name)
+
+
+gse <- 'GSE27919067'
+gpl <- 'GPL11154'
+project_main_dir <- "/cluster/home/chenhy/project/neuron_drivers_landscape/data/"
+project_name <- sprintf('Autism_%s_%s',gse,gpl) 
+network.par  <- NetBID.network.dir.create(project_main_dir=project_main_dir,project_name=project_name)
+NetBID.loadRData(network.par = network.par,step='exp-load')
+gse27919067_symbol <- unique(transfer_tab[which(transfer_tab$external_gene_name %in% rownames(exprs(network.par$net.eset))),] %>% .[which(.$gene_biotype=="protein_coding"),] %>% .$external_gene_name)
+rm(network.par)
+
+gse <- 'GSE28521'
+gpl <- 'GPL6883'
+project_main_dir <- "/cluster/home/chenhy/project/neuron_drivers_landscape/data/"
+project_name <- sprintf('Autism_%s_%s',gse,gpl) 
+network.par  <- NetBID.network.dir.create(project_main_dir=project_main_dir,project_name=project_name)
+NetBID.loadRData(network.par = network.par,step='exp-load')
+gse28521_symbol <- unique(transfer_tab[which(transfer_tab$external_gene_name %in% rownames(exprs(network.par$net.eset))),] %>% .[which(.$gene_biotype=="protein_coding"),] %>% .$external_gene_name)
+rm(network.par)
+
+venn.plot_up <- venn.diagram(
+  #数据列表
+  x = list(
+    GSE27919067_seq = gse27919067_symbol,
+    GSE28521_array = gse28521_symbol,
+    GSE64018_seq = gse64018_symbol
+  ),
+  filename = NULL,    #保存路径
+  #main="Overlap of up regulated genes",
+  #sub = "Subtitle",
+  height = 450, 
+  width = 450,
+  resolution =300, 
+  #imagetype="png", 
+  col = "transparent",      #指定图形的圆周边缘颜色  transparent 透明           
+  fill = c(colors()[148], colors()[589], colors()[116]),  #填充颜色
+  alpha = c(0.6, 0.6, 0.6),                                      #透明度
+  label.col = c("orange", "white", "darkorchid4", "white",
+                "white", "darkgreen", "white"),
+  lwd = 0.5,
+  cex = 1,    #每个区域label名称的大小
+  fontfamily = "serif",  #字体
+  fontface = "bold",     #字体格式
+  cat.col = c("black"),  #分类颜色 
+  cat.cex = 1,      #每个分类名称大小
+  cat.pos = c(100, 260, 0),        #
+  cat.dist = c(-0.05, 0.15, 0.15),    #
+  cat.fontfamily = "serif",     #分类字体
+  rotation.degree =180,        #旋转角度
+  margin = 0.2               #在网格单元中给出图周围空白量的编号
+);
+#可以不保存查看图片，但是效果不佳（命令如下，但是需要首先把filename设置为（filename=NULL））
+grid.draw(venn.plot_up)
+#dev.off()
+
+
+# look <- transfer_tab[which(transfer_tab$external_gene_name %in% gse102741_symbol[-which(gse102741_symbol %in% gse27919067_symbol)]),]
+# look <- transfer_tab[which(transfer_tab$external_gene_name %in% gse27919067_symbol[-which(gse27919067_symbol %in% gse102741_symbol)]),]
+# look <- transfer_tab[which(transfer_tab$external_gene_name %in% gse64018_symbol[-which(gse64018_symbol %in% union(gse102741_symbol,gse27919067_symbol))]),]
+# 
+# look <- transfer_tab[which(!(transfer_tab$external_gene_name %in% gse27919067_symbol) & (transfer_tab$external_gene_name %in% gse64018_symbol)),]
+# write.csv(look,file ="/cluster/home/chenhy/project/neuron_drivers_landscape/result/In_gse64018_notin_other_biotype_182genes.csv",row.names = F)

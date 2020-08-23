@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1594694134927.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "F8B7CE06",
+    "lastKnownWriteTime" : 1594694350,
+    "last_content_update" : 1594694212207,
+    "path" : "~/project/Brainspan/src/brainspan_nonorm.R",
+    "project_path" : "brainspan_nonorm.R",
+    "properties" : {
+        "cursorPosition" : "144,0",
+        "scrollLine" : "129",
+        "tempName" : "Untitled2"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 8,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,418 @@
+---
+title: "Autism-Part2"
+author: "chenhy"
+date: "2020/6/12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r library packages, message=FALSE, warning=FALSE, include=FALSE}
+library(NetBID2)
+library(factoextra) #for cluster
+library(tidyverse)
+library(stringr)
+library(cluster)
+```
+```{r get_drivers, message=FALSE, warning=FALSE, include=FALSE}
+## input GSE data
+gse_info <- openxlsx::read.xlsx("/cluster/home/chenhy/project/neuron_drivers_landscape/data/Autism_info.xlsx",1)
+gse_info_select <- gse_info[which(gse_info$GSE_code %in% c("GSE27919067","GSE28521","GSE64018")),c("GSE_code","GPL","Study.type","Case","Control","Age","Race","Tissue")]
+gse_list <- list()
+for (i in 1:nrow(gse_info_select)) {
+  project_main_dir <- "/cluster/home/chenhy/project/neuron_drivers_landscape/data/"
+  project_name <- sprintf('Autism_%s_%s',gse_info_select[i,"GSE_code"],gse_info_select[i,"GPL"])
+  analysis.par <- list()
+  analysis.par$out.dir.DATA <- file.path(project_main_dir,project_name,"DATA/")
+  NetBID.loadRData(analysis.par=analysis.par,step='ms-tab')
+  gse_list[[gse_info_select[i,"GSE_code"]]] <-  analysis.par
+  rm(analysis.par)
+}
+```
+
+
+## Explore the autism driver in brain development
+### Pheatmap of activity
+
+```{r load_ac, echo=FALSE, message=FALSE, warning=FALSE, comment=''}
+# get drivers in Brainspan
+project_main_dir <- "/cluster/home/chenhy/project/Brainspan/network/"
+project_name <- "brainspan_nonorm"
+analysis.par <- list()
+analysis.par$out.dir.DATA <- file.path(project_main_dir,project_name,"DATA/")
+NetBID.loadRData(analysis.par=analysis.par,step='act-get')
+phe <- pData(analysis.par$cal.eset) %>% dplyr::rename(stage=class1)
+ac_mat <- exprs(analysis.par$merge.ac.eset)
+ac_mat_drivers <- rownames(ac_mat)
+```
+
+
+```{r get_up_drivers, echo=FALSE, message=FALSE, warning=FALSE, comment='',fig.show=F}
+source("get_sig_drivers.R")
+#length(intersect(str_split(rownames(ac_mat),"_",simplify=T)[,1],sig_driver$ID))
+gse27919067 <- gse27919067_all_driver[which(gse27919067_all_driver$logFC.ASD.Vs.TD_DA > 0),"originalID_label"]
+gse28521 <- gse28521_all_driver[which(gse28521_all_driver$logFC.ASD.Vs.TD_DA > 0),"originalID_label"]
+gse64018 <- gse64018_all_driver[which(gse64018_all_driver$logFC.ASD.Vs.TD_DA > 0),"originalID_label"]
+union_driver <- Reduce(union,list(v1=intersect(gse27919067,gse64018),
+                                  v2=intersect(gse27919067,gse28521),
+                                  v3=intersect(gse28521,gse64018)))
+sprintf("GSE27919067 GSE64018 GSE28521共有的up drivers数量：%s",length(union_driver))
+```
+
+#### The activity pheatmap of up regulated drivers
+```{r ac_pheatmap_up, echo=F, message=FALSE, warning=FALSE,fig.height=5}
+select_driver <- ac_mat_drivers %in% union_driver
+use_drivers_up <- rownames(ac_mat)[select_driver]
+pdf(file = "/cluster/home/chenhy/project/Brainspan/result/plot/ac_pheatmap_up.pdf",width = 10,height = 8)
+draw.heatmap(mat=ac_mat,use_genes=use_drivers_up,
+             use_gene_label=use_drivers_up,
+             use_samples=colnames(ac_mat),
+             phenotype_info=phe,use_phe=c('gender','stage'),
+             main='Activity for up regulated drivers',scale='row',
+             show_column_names = FALSE,
+             cluster_rows=TRUE,cluster_columns=FALSE,
+             clustering_distance_rows='euclidean',
+             clustering_distance_columns='euclidean',
+             clustering_method_rows = "complete",
+             row_names_gp = gpar(fontsize = 10),
+             show_row_names = F,
+             col=circlize::colorRamp2(breaks=seq(-2,2,length.out=10),
+                                      colors=rev(brewer.pal(10,'Spectral')))
+             )
+dev.off()
+```
+
+#### The activity pheatmap of down regulated drivers
+```{r get_down_drivers, echo=FALSE, message=FALSE, warning=FALSE,comment=''}
+gse27919067 <- gse27919067_all_driver[which(gse27919067_all_driver$logFC.ASD.Vs.TD_DA < 0),"originalID_label"]
+gse28521 <- gse28521_all_driver[which(gse28521_all_driver$logFC.ASD.Vs.TD_DA < 0),"originalID_label"]
+gse64018 <- gse64018_all_driver[which(gse64018_all_driver$logFC.ASD.Vs.TD_DA < 0),"originalID_label"]
+union_driver <- Reduce(union,list(v1=intersect(gse27919067,gse64018),
+                                  v2=intersect(gse27919067,gse28521),
+                                  v3=intersect(gse28521,gse64018)))
+sprintf("GSE27919067 GSE64018 GSE28521共有的down drivers数量：%s",length(union_driver))
+```
+
+```{r ac_pheatmap_down, echo=FALSE, message=FALSE, warning=FALSE}
+select_driver <- ac_mat_drivers %in% union_driver
+use_drivers_down <- rownames(ac_mat)[select_driver]
+pdf(file = "/cluster/home/chenhy/project/Brainspan/result/plot/ac_pheatmap_down.pdf",width = 10,height = 8)
+draw.heatmap(mat=ac_mat,use_genes=use_drivers_down,
+             use_gene_label=use_drivers_down,
+             use_samples=colnames(ac_mat),
+             phenotype_info=phe,use_phe=c('gender','stage'),
+             main='Activity for down regulated drivers',scale='row',
+             show_column_names = FALSE,
+             cluster_rows=TRUE,cluster_columns=FALSE,
+             clustering_distance_rows='euclidean',
+             clustering_distance_columns='euclidean',
+             clustering_method_rows = "complete",
+             row_names_gp = gpar(fontsize = 10),
+             show_row_names = F,
+             col=circlize::colorRamp2(breaks=seq(-2,2,length.out=10),
+                                      colors=rev(brewer.pal(10,'Spectral')))
+            )
+dev.off()
+```
+
+```{r test, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+h1 <- hclust(as.dist(1-cor(t(ac_mat[select_driver,]))),method='complete')
+h2 <- hclust(as.dist(1-cor(ac_mat[select_driver,])),method='complete')
+o1 <- h1$order
+o2 <- h2$order
+use_mat1 <- ac_mat[o1,o2]
+hcd <- as.dendrogram(h1)
+plot(hcd,type = "rectangle", ylab = "",xlim=c(0.5,length(h1$order)+0.5),xaxs='i',yaxs='i',yaxt='n',
+     ylim=c(-8,0.5+max(h1$height)))
+
+```
+
+
+### Cluster analysis of drivers' activity
+#### up regulated drivers cluster
+```{r cluster_up, echo=TRUE, message=FALSE, warning=FALSE, fig.width=10}
+ac_mat_up <- ac_mat[which(rownames(ac_mat) %in% use_drivers_up),]
+#层次聚类 
+result <- get_dist(ac_mat_up, method = "pearson")
+result_hc <- hclust(d = result, method = "complete")
+hc_ac_mat_up <- as.data.frame(cbind(ac_mat_up, cluster = cutree(result_hc,k = 3)))
+#fviz_dend(result_hc, cex = 0.6)蓝"#2E9FDF", 浅棕"#00AFBB", 橘黄"#E7B800", 红"#FC4E07"
+fviz_dend(result_hc, k = 3, 
+          cex = 0.5, 
+          k_colors = c("#2E9FDF", "#E7B800", "#FC4E07"),
+          color_labels_by_k = TRUE, 
+          show_labels = F,
+          rect = TRUE
+)
+```
+
+### Plot trendline for each cluster up drivers activity in Brainspan
+```{r get_data_up, echo=FALSE, message=FALSE, warning=FALSE, fig.height=6}
+for (i in 1:3) {
+  hc_ac_mat_up <- as.data.frame(hc_ac_mat_up)
+  cluster_driver <- hc_ac_mat_up[which(hc_ac_mat_up$cluster == i),]
+  assign(paste("sub_cluster", i, sep = ""), as.data.frame(colMeans(cluster_driver)) %>% plyr::rename(c("colMeans(cluster_driver)"=paste("cluster",i,sep = ""))))
+}
+cluster_driver <- cbind(sub_cluster1,sub_cluster2,sub_cluster3) %>% .[-nrow(.),]
+cluster_driver$week_numeric <- phe$week_numeric
+cluster_driver$age <- phe$age
+cluster_driver$factor_age <- factor(cluster_driver$week_numeric,ordered = F);cluster_driver$age_num <- as.numeric(cluster_driver$factor_age)
+cluster_driver <- subset(cluster_driver, select = -c(factor_age,week_numeric))
+cluster_driver <- melt(cluster_driver,id=c("age","age_num"))
+
+ggplot(data=cluster_driver)+
+  geom_point(aes(x=age_num,y=value,color = variable),size=1.5,alpha=0.6,show.legend = FALSE)+
+  #geom_boxplot(aes(x=age_num,y=value,fill=variable),show.legend = FALSE)+
+  scale_color_manual(values = c("#FC4E07", "#2E9FDF", "#E7B800"))+
+  geom_smooth(aes(x=age_num,y=value,color = variable,group = variable),method='loess',span=0.2,se = F,size=0.6)+
+  guides(shape = guide_legend(override.aes = list(size = 2)),color = guide_legend(override.aes = list(size = 3)))+ #修改图例形状
+  scale_x_continuous(limits=c(min(cluster_driver$age_num),max(cluster_driver$age_num)),breaks=unique(cluster_driver$age_num),labels=unique(cluster_driver$age))+
+  scale_y_continuous(limits=c(min(cluster_driver[,"value"]),max(cluster_driver[,"value"])),breaks=round(seq(min(cluster_driver[,"value"]),max(cluster_driver[,"value"]),length.out=7),1))+
+  labs(x="Age",y="Activity level",title = "Activity level for up regulated drivers")+
+  theme(legend.title = element_blank(),legend.position = c(0.88, 0.87),
+        axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(panel.background=element_rect(fill='transparent',color='transparent'),
+        legend.key=element_rect(fill='transparent', color='transparent'),
+        plot.title = element_text(hjust = 0.5),
+        panel.border = element_rect(linetype="solid",fill = "transparent"))
+```
+
+
+#### down regulated drivers cluster
+```{r cluster_down, echo=FALSE, message=FALSE, warning=FALSE,fig.width=10}
+ac_mat_down <- ac_mat[which(rownames(ac_mat) %in% use_drivers_down),]
+result <- get_dist(ac_mat_down, method = "pearson")
+result_hc <- hclust(d = result, method = "complete")
+hc_ac_mat_down <- as.data.frame(cbind(ac_mat_down, cluster = cutree(result_hc,k = 2)))
+#fviz_dend(result_hc, cex = 0.6)
+fviz_dend(result_hc, k = 2, 
+          cex = 0.5, 
+          k_colors = c("#FC4E07","#2E9FDF"),
+          color_labels_by_k = TRUE, 
+          show_labels = F,
+          rect = TRUE
+)
+```
+
+
+### Plot trendline for each cluster down drivers activity in Brainspan
+```{r get_data_down, echo=FALSE, message=FALSE, warning=FALSE, fig.height=6}
+for (i in 1:2) {
+  hc_ac_mat_down <- as.data.frame(hc_ac_mat_down)
+  cluster_driver <- hc_ac_mat_down[which(hc_ac_mat_down$cluster == i),]
+  assign(paste("sub_cluster", i, sep = ""), as.data.frame(colMeans(cluster_driver)) %>% plyr::rename(c("colMeans(cluster_driver)"=paste("cluster",i,sep = ""))))
+}
+cluster_driver <- cbind(sub_cluster1,sub_cluster2) %>% .[-nrow(.),]
+cluster_driver$age <- phe$age
+cluster_driver$week_numeric <- phe$week_numeric
+cluster_driver$factor_age <- factor(cluster_driver$week_numeric,ordered = F);cluster_driver$age_num <- as.numeric(cluster_driver$factor_age)
+cluster_driver <- subset(cluster_driver, select = -c(factor_age,week_numeric))
+cluster_driver <- melt(cluster_driver,id=c("age","age_num"))
+
+ggplot(data=cluster_driver)+
+  geom_point(aes(x=age_num,y=value,color = variable),size=1.5,alpha=.6,show.legend = FALSE)+
+  scale_color_manual(values = c("#FC4E07","#2E9FDF"))+
+  geom_smooth(aes(x=age_num,y=value,color = variable, group = variable),method='loess',span=0.25,se = F,size=0.6)+
+  guides(shape = guide_legend(override.aes = list(size = 2)),color = guide_legend(override.aes = list(size = 3)))+
+  scale_x_continuous(limits=c(min(cluster_driver$age_num),max(cluster_driver$age_num)),breaks=unique(cluster_driver$age_num),labels=unique(cluster_driver$age))+
+  scale_y_continuous(limits=c(min(cluster_driver[,"value"]),max(cluster_driver[,"value"])),breaks=round(seq(min(cluster_driver[,"value"]),max(cluster_driver[,"value"]),length.out=7),1))+
+  labs(x="Age",y="Activity level",title = "Activity level for down regulated drivers")+
+  theme(legend.title = element_blank(),legend.position = c(0.9, 0.15),
+        axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(panel.background=element_rect(fill='transparent',color='transparent'),
+        legend.key=element_rect(fill='transparent', color='transparent'),
+        plot.title = element_text(hjust = 0.5),
+        panel.border = element_rect(linetype="solid",fill = "transparent"))
+```
+
+### Function enrichment
+Up drivers enrichment  
+Most GO items is associated with brain development
+```{r up_driver_enrichment, echo=TRUE, message=FALSE, warning=FALSE,fig.width=12}
+gs.preload(use_spe='Homo sapiens',update=FALSE)
+ench_up <- funcEnrich.Fisher(input_list=str_split(rownames(ac_mat_up),"_",simplify = T)[,1],
+  bg_list=str_split(ac_mat_drivers,"_",simplify = T)[,1],
+  use_gs=c('H','C5'),
+  Pv_thre=0.1,Pv_adj = 'none')
+draw.funcEnrich.cluster(funcEnrich_res=ench_up,top_number=20,gs_cex = 1,
+  gene_cex=0.5,pv_cex=0.8,
+  cluster_gs=TRUE,cluster_gene = TRUE)
+```
+
+Enrichment analysis for first up drivers cluster 
+```{r cluster1_ench, echo=TRUE, message=FALSE, warning=FALSE,fig.width=13,fig.height=5}
+up_cluster1 <- funcEnrich.Fisher(input_list=str_split(rownames(hc_ac_mat_up[which(hc_ac_mat_up$cluster == 1),]),"_",simplify = T)[,1],
+  bg_list=str_split(ac_mat_drivers,"_",simplify = T)[,1],
+  use_gs=c('H','C5'),
+  Pv_thre=0.1,Pv_adj = 'none')
+draw.funcEnrich.cluster(funcEnrich_res=up_cluster1,top_number=20,gs_cex = 1,
+  gene_cex=1,pv_cex=0.8,
+  cluster_gs=TRUE,cluster_gene = TRUE)
+```
+
+Enrichment analysis for second up drivers cluster 
+```{r cluster2_ench, echo=TRUE, message=FALSE, warning=FALSE,fig.width=13,fig.height=5}
+up_cluster2 <- funcEnrich.Fisher(input_list=str_split(rownames(hc_ac_mat_up[which(hc_ac_mat_up$cluster == 2),]),"_",simplify = T)[,1],
+  bg_list=str_split(ac_mat_drivers,"_",simplify = T)[,1],
+  use_gs=c('H','C5'),
+  Pv_thre=0.1,Pv_adj = 'none')
+draw.funcEnrich.cluster(funcEnrich_res=up_cluster2,top_number=20,gs_cex = 1,
+  gene_cex=1,pv_cex=0.8,
+  cluster_gs=TRUE,cluster_gene = TRUE)
+```
+
+Enrichment analysis for third up drivers cluster 
+```{r cluster3_ench, echo=TRUE, message=FALSE, warning=FALSE, fig.width=13,fig.height=5}
+up_cluster3 <- funcEnrich.Fisher(input_list=str_split(rownames(hc_ac_mat_up[which(hc_ac_mat_up$cluster == 3),]),"_",simplify = T)[,1],
+  bg_list=str_split(ac_mat_drivers,"_",simplify = T)[,1],
+  use_gs=c('H','C5'),
+  Pv_thre=0.1,Pv_adj = 'none')
+draw.funcEnrich.cluster(funcEnrich_res=up_cluster3,top_number=20,gs_cex = 1,
+  gene_cex=1,pv_cex=0.8,
+  cluster_gs=TRUE,cluster_gene = TRUE)
+```
+
+Down drivers enrichment for cluster1
+```{r down_driver_enrichment_cluster1, echo=TRUE, message=FALSE, warning=FALSE,fig.width=13,fig.height=6}
+down_cluster1 <- funcEnrich.Fisher(input_list=str_split(rownames(hc_ac_mat_down[which(hc_ac_mat_down$cluster == 1),]),"_",simplify = T)[,1],
+  bg_list=str_split(ac_mat_drivers,"_",simplify = T)[,1],
+  use_gs=c('H','C5'),
+  Pv_thre=0.1,Pv_adj = 'none')
+draw.funcEnrich.cluster(funcEnrich_res=down_cluster1,top_number=30,gs_cex = 1,
+  gene_cex=0.5,pv_cex=0.7,
+  cluster_gs=TRUE,cluster_gene = TRUE)
+```
+
+Down drivers enrichment for cluster2
+```{r down_driver_enrichment_cluster2, echo=TRUE, message=FALSE, warning=FALSE, fig.width=13,fig.height=5}
+down_cluster2 <- funcEnrich.Fisher(input_list=str_split(rownames(hc_ac_mat_down[which(hc_ac_mat_down$cluster == 2),]),"_",simplify = T)[,1],
+  bg_list=str_split(ac_mat_drivers,"_",simplify = T)[,1],
+  use_gs=c('H','C5'),
+  Pv_thre=0.1,Pv_adj = 'none')
+draw.funcEnrich.cluster(funcEnrich_res=down_cluster2,top_number=20,gs_cex = 1,
+  gene_cex=0.8,pv_cex=0.8,
+  cluster_gs=TRUE,cluster_gene = TRUE)
+```
+
+
+
+## Comparison of activity level with expression level of disgenet  
+
+### Mean Score gda of sig up regulated genes and drivers
+```{r disgenet_up, echo=FALSE, message=FALSE, warning=FALSE}
+source("get_sig_genes.R")
+source("get_sig_drivers.R")
+autism_gene <- read.table(file = "/cluster/home/chenhy/project/neuron_drivers_landscape/data/C1510586_disease_gda_summary.tsv",sep = "\t",quote = "",header = T,stringsAsFactors = F)
+gse27919067_sig_gene_disgenet <- autism_gene %>% .[which(.$Gene %in% gse27919067_all_gene[which(gse27919067_all_gene$logFC>0),"ID"]),c("Gene","Score_gda")]
+gse27919067_sig_gene_disgenet$group <- "gse27919067_sig_gene_disgenet"
+gse27919067_sig_driver_disgenet <- autism_gene %>% .[which(.$Gene %in% str_split(gse27919067_all_driver[which(gse27919067_all_driver$logFC.ASD.Vs.TD_DA>0),]$originalID_label,"_",simplify = T)[,1]),c("Gene","Score_gda")]
+gse27919067_sig_driver_disgenet$group <- "gse27919067_sig_driver_disgenet"
+gse27919067_disgenet <- autism_gene %>% .[which(.$Gene %in% rownames(exprs(gse_list[["GSE27919067"]]$cal.eset))),c("Gene","Score_gda")]
+gse27919067_disgenet$group <- "gse27919067_disgenet"
+gse27919067_up_disgenet <- rbind(gse27919067_sig_gene_disgenet,gse27919067_sig_driver_disgenet,gse27919067_disgenet)
+#ggplot(data = gse27919067_disgenet,group = group, aes(x=Score_gda)) + geom_density(aes(color = group)) + theme_classic()
+
+gse64018_sig_gene_disgenet <- autism_gene %>% .[which(.$Gene %in% gse64018_all_gene[which(gse64018_all_gene$logFC>0),"ID"]),c("Gene","Score_gda")]
+gse64018_sig_gene_disgenet$group <- "gse64018_sig_gene_disgenet"
+gse64018_sig_driver_disgenet <- autism_gene %>% .[which(.$Gene %in% str_split(gse64018_all_driver[which(gse64018_all_driver$logFC.ASD.Vs.TD_DA>0),]$originalID_label,"_",simplify = T)[,1]),c("Gene","Score_gda")]
+gse64018_sig_driver_disgenet$group <- "gse64018_sig_driver_disgenet"
+gse64018_disgenet <- autism_gene %>% .[which(.$Gene %in% rownames(exprs(gse_list[["GSE64018"]]$cal.eset))),c("Gene","Score_gda")]
+gse64018_disgenet$group <- "gse64018_disgenet"
+gse64018_up_disgenet <- rbind(gse64018_sig_gene_disgenet,gse64018_sig_driver_disgenet,gse64018_disgenet)
+
+gse28521_sig_gene_disgenet <- autism_gene %>% .[which(.$Gene %in% gse28521_all_gene[which(gse28521_all_gene$logFC>0),"ID"]),c("Gene","Score_gda")]
+gse28521_sig_gene_disgenet$group <- "gse28521_sig_gene_disgenet"
+gse28521_sig_driver_disgenet <- autism_gene %>% .[which(.$Gene %in% str_split(gse28521_all_driver[which(gse28521_all_driver$logFC.ASD.Vs.TD_DA>0),]$originalID_label,"_",simplify = T)[,1]),c("Gene","Score_gda")]
+gse28521_sig_driver_disgenet$group <- "gse28521_sig_driver_disgenet"
+gse28521_disgenet <- autism_gene %>% .[which(.$Gene %in% rownames(exprs(gse_list[["GSE28521"]]$cal.eset))),c("Gene","Score_gda")]
+gse28521_disgenet$group <- "gse28521_disgenet"
+gse28521_up_disgenet <- rbind(gse28521_sig_gene_disgenet,gse28521_sig_driver_disgenet,gse28521_disgenet)
+
+overlap1 <- intersect(gse27919067_all_gene[which(gse27919067_all_gene$logFC>0),]$ID,gse64018_all_gene[which(gse64018_all_gene$logFC>0),]$ID)
+overlap2 <- intersect(gse27919067_all_gene[which(gse27919067_all_gene$logFC>0),]$ID,gse28521_all_gene[which(gse28521_all_gene$logFC>0),]$ID)
+overlap3 <- intersect(gse64018_all_gene[which(gse64018_all_gene$logFC>0),]$ID,gse28521_all_gene[which(gse28521_all_gene$logFC>0),]$ID)
+
+overlap_sig_gene_disgenet <- autism_gene %>% .[which(.$Gene %in% Reduce(union,list(v1=overlap1,v2=overlap2,v3=overlap3))),c("Gene","Score_gda")]
+overlap_sig_gene_disgenet$group <- "overlap_sig_gene_disgenet"
+overlap_driver1 <- intersect(gse27919067_all_driver[which(gse27919067_all_driver$logFC.ASD.Vs.TD_DA>0),]$originalID_label,gse64018_all_driver[which(gse64018_all_driver$logFC.ASD.Vs.TD_DA>0),]$originalID_label)
+overlap_driver2 <- intersect(gse27919067_all_driver[which(gse27919067_all_driver$logFC.ASD.Vs.TD_DA>0),]$originalID_label,gse28521_all_driver[which(gse28521_all_driver$logFC.ASD.Vs.TD_DA>0),]$originalID_label)
+overlap_sig_driver_disgenet <- autism_gene %>% .[which(.$Gene %in% str_split(union(overlap_driver1,overlap_driver2),"_",simplify = T)[,1]),c("Gene","Score_gda")]
+overlap_sig_driver_disgenet$group <- "overlap_sig_driver_disgenet"
+overlap_disgenet <- rbind(overlap_sig_gene_disgenet,overlap_sig_driver_disgenet,gse27919067_up_disgenet,gse64018_up_disgenet,gse28521_up_disgenet)
+overlap_disgenet %>% dplyr::group_by(group) %>% dplyr::summarise(n=n(),mean_gda = mean(Score_gda),median_gda = median(Score_gda)) %>% knitr::kable(format = "html",row.names = F) %>% kable_styling(full_width = T)
+```
+
+
+### Mean Score gda of sig down regulated genes and drivers
+```{r disgenet_down, echo=FALSE, message=FALSE, warning=FALSE}
+autism_gene <- read.table(file = "/cluster/home/chenhy/project/neuron_drivers_landscape/data/C1510586_disease_gda_summary.tsv",sep = "\t",quote = "",header = T,stringsAsFactors = F)
+gse27919067_sig_gene_disgenet <- autism_gene %>% .[which(.$Gene %in% gse27919067_all_gene[which(gse27919067_all_gene$logFC<0),"ID"]),c("Gene","Score_gda")]
+gse27919067_sig_gene_disgenet$group <- "gse27919067_sig_gene_disgenet"
+gse27919067_sig_driver_disgenet <- autism_gene %>% .[which(.$Gene %in% str_split(gse27919067_all_driver[which(gse27919067_all_driver$logFC.ASD.Vs.TD_DA<0),]$originalID_label,"_",simplify = T)[,1]),c("Gene","Score_gda")]
+gse27919067_sig_driver_disgenet$group <- "gse27919067_sig_driver_disgenet"
+gse27919067_disgenet <- autism_gene %>% .[which(.$Gene %in% rownames(exprs(gse_list[["GSE27919067"]]$cal.eset))),c("Gene","Score_gda")]
+gse27919067_disgenet$group <- "gse27919067_disgenet"
+gse27919067_down_disgenet <- rbind(gse27919067_sig_gene_disgenet,gse27919067_sig_driver_disgenet,gse27919067_disgenet)
+
+gse64018_sig_gene_disgenet <- autism_gene %>% .[which(.$Gene %in% gse64018_all_gene[which(gse64018_all_gene$logFC<0),"ID"]),c("Gene","Score_gda")]
+gse64018_sig_gene_disgenet$group <- "gse64018_sig_gene_disgenet"
+gse64018_sig_driver_disgenet <- autism_gene %>% .[which(.$Gene %in% str_split(gse64018_all_driver[which(gse64018_all_driver$logFC.ASD.Vs.TD_DA<0),]$originalID_label,"_",simplify = T)[,1]),c("Gene","Score_gda")]
+gse64018_sig_driver_disgenet$group <- "gse64018_sig_driver_disgenet"
+gse64018_disgenet <- autism_gene %>% .[which(.$Gene %in% rownames(exprs(gse_list[["GSE64018"]]$cal.eset))),c("Gene","Score_gda")]
+gse64018_disgenet$group <- "gse64018_disgenet"
+gse64018_down_disgenet <- rbind(gse64018_sig_gene_disgenet,gse64018_sig_driver_disgenet,gse64018_disgenet)
+
+gse28521_sig_gene_disgenet <- autism_gene %>% .[which(.$Gene %in% gse28521_all_gene[which(gse28521_all_gene$logFC<0),"ID"]),c("Gene","Score_gda")]
+gse28521_sig_gene_disgenet$group <- "gse28521_sig_gene_disgenet"
+gse28521_sig_driver_disgenet <- autism_gene %>% .[which(.$Gene %in% str_split(gse28521_all_driver[which(gse28521_all_driver$logFC.ASD.Vs.TD_DA<0),]$originalID_label,"_",simplify = T)[,1]),c("Gene","Score_gda")]
+gse28521_sig_driver_disgenet$group <- "gse28521_sig_driver_disgenet"
+gse28521_disgenet <- autism_gene %>% .[which(.$Gene %in% rownames(exprs(gse_list[["GSE28521"]]$cal.eset))),c("Gene","Score_gda")]
+gse28521_disgenet$group <- "gse28521_disgenet"
+gse28521_down_disgenet <- rbind(gse28521_sig_gene_disgenet,gse28521_sig_driver_disgenet,gse28521_disgenet)
+
+overlap1 <- intersect(gse27919067_all_gene[which(gse27919067_all_gene$logFC<0),]$ID,gse64018_all_gene[which(gse64018_all_gene$logFC<0),]$ID)
+overlap2 <- intersect(gse27919067_all_gene[which(gse27919067_all_gene$logFC<0),]$ID,gse28521_all_gene[which(gse28521_all_gene$logFC<0),]$ID)
+overlap_sig_gene_disgenet <- autism_gene %>% .[which(.$Gene %in% union(overlap1,overlap2)),c("Gene","Score_gda")]
+overlap_sig_gene_disgenet$group <- "overlap_sig_gene_disgenet"
+overlap_driver1 <- intersect(gse27919067_all_driver[which(gse27919067_all_driver$logFC.ASD.Vs.TD_DA<0),]$originalID_label,gse64018_all_driver[which(gse64018_all_driver$logFC.ASD.Vs.TD_DA<0),]$originalID_label)
+overlap_driver2 <- intersect(gse27919067_all_driver[which(gse27919067_all_driver$logFC.ASD.Vs.TD_DA<0),]$originalID_label,gse28521_all_driver[which(gse28521_all_driver$logFC.ASD.Vs.TD_DA<0),]$originalID_label)
+overlap_sig_driver_disgenet <- autism_gene %>% .[which(.$Gene %in% str_split(union(overlap_driver1,overlap_driver2),"_",simplify = T)[,1]),c("Gene","Score_gda")]
+
+overlap_sig_driver_disgenet$group <- "overlap_sig_driver_disgenet"
+overlap_disgenet <- rbind(overlap_sig_gene_disgenet,overlap_sig_driver_disgenet,gse27919067_down_disgenet,gse64018_down_disgenet,gse28521_down_disgenet)
+overlap_disgenet %>% dplyr::group_by(group) %>% dplyr::summarise(n=n(),mean_gda = mean(Score_gda),median_gda = median(Score_gda)) %>% knitr::kable(format = "html",row.names = F) %>% kable_styling(full_width = T)
+```
+
+
+```{r outexcel_driver_with_disgenet, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+gse27919067_all_driver$Gene <- str_split(gse27919067_all_driver$originalID_label,"_",simplify = T)[,1]
+gse27919067_all_driver <- gse27919067_all_driver %>% left_join(autism_gene %>% select(Gene,Score_gda),by="Gene")
+gse27919067_all_driver <- gse_list[["GSE27919067"]]$DE$ASD.Vs.TD %>% select(ID,logFC) %>% dplyr::rename(Gene=ID) %>% right_join(gse27919067_all_driver,by="Gene")
+gse27919067_all_driver$gene_reg <- ifelse(gse27919067_all_driver$logFC>0,"up","down")
+gse27919067_all_driver$driver_reg <- ifelse(gse27919067_all_driver$logFC.ASD.Vs.TD_DA>0,"up","down")
+gse27919067_all_driver$driver_gene_consistent <- ifelse(gse27919067_all_driver$gene_reg==gse27919067_all_driver$driver_reg,"1","0")
+gse27919067_all_driver$GSE_code <- "GSE27919067"
+
+gse64018_all_driver$Gene <- str_split(gse64018_all_driver$originalID_label,"_",simplify = T)[,1]
+gse64018_all_driver <- gse64018_all_driver %>% left_join(autism_gene %>% select(Gene,Score_gda),by="Gene")
+gse64018_all_driver <- gse_list[["GSE64018"]]$DE$ASD.Vs.TD %>% select(ID,logFC) %>% dplyr::rename(Gene=ID) %>% right_join(gse64018_all_driver,by="Gene")
+gse64018_all_driver$gene_reg <- ifelse(gse64018_all_driver$logFC>0,"up","down")
+gse64018_all_driver$driver_reg <- ifelse(gse64018_all_driver$logFC.ASD.Vs.TD_DA>0,"up","down")
+gse64018_all_driver$driver_gene_consistent <- ifelse(gse64018_all_driver$gene_reg==gse64018_all_driver$driver_reg,"1","0")
+gse64018_all_driver$GSE_code <- "GSE64018"
+
+driver_disgenet <- rbind(select(gse27919067_all_driver,originalID_label,Score_gda,gene_reg,driver_reg,GSE_code),select(gse64018_all_driver,originalID_label,Score_gda,gene_reg,driver_reg,GSE_code))
+out2excel(driver_disgenet,out.xlsx = "/cluster/home/chenhy/project/Brainspan/result/driver_disgenet.xlsx")
+```
+
+
+```{r disgenet_sfari_percent, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+disgenet_gene <- read.table(file = "/cluster/home/chenhy/project/neuron_drivers_landscape/data/C1510586_disease_gda_summary.tsv",sep = "\t",quote = "",header = T,stringsAsFactors = F) %>% .[,"Gene"]
+sfari_gene <- read.csv(file = "/cluster/home/chenhy/project/neuron_drivers_landscape/data/SFARI-Gene_genes_05-19-2020release_06-30-2020export.csv",stringsAsFactors = F) %>% .[,"gene.symbol"]
+a <- intersect(str_split(rownames(hc_ac_mat_down),"_",simplify = T)[,1],disgenet_gene)
+b <- intersect(str_split(rownames(hc_ac_mat_down),"_",simplify = T)[,1],sfari_gene)
+length(intersect(a,b))
+length(intersect(str_split(use_drivers_up,"_",simplify = T)[,1],disgenet_gene))
+length(intersect(str_split(use_drivers_up,"_",simplify = T)[,1],sfari_gene))
+```

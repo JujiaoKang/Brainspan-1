@@ -1,0 +1,6 @@
+"0","gse64018_DE <- gse_list[[""GSE64018""]]$DE$ASD.Vs.TD %>% .[which(.$ID %in% intersect(A,C)),]"
+"0","plot_gse_pheatmap_DE(gse = gse_list[[""GSE64018""]], gse_DE = gse64018_DE, status = ""up/down"", use_phe = c(""diagnosis""))"
+"1","[1]"
+"1"," TRUE"
+"1","
+"

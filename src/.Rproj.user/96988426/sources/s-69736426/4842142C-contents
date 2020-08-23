@@ -1,0 +1,10 @@
+library(openxlsx)
+library(tidyverse)
+tmp <- openxlsx::read.xlsx("/cluster/home/chenhy/project/Meihongfang/result/hydrocephalus/Supplementary_Data1.xlsx")
+tmp$gene <- stringr::str_split(tmp$Dis_variant,":",simplify=T)[,1]
+tmp$HGVS <- stringr::str_c(stringr::str_split(tmp$Dis_variant,":",simplify=T)[,2],":",stringr::str_split(tmp$Dis_variant,":",simplify=T)[,3],":",stringr::str_split(tmp$Dis_variant,":",simplify=T)[,4])
+library(NetBID2)
+out2excel(tmp,out.xlsx = "/cluster/home/chenhy/project/Meihongfang/result/hydrocephalus/Supplementary_Data.xlsx")
+sig_variant <- read.csv("/cluster/home/chenhy/project/Meihongfang/result/sig_variant_10000.csv")
+sig_variant <- sig_variant %>% rename(Dis_variant=gene_report_variant)
+tmp <- tmp %>% left_join(sig_variant,by="Dis_variant")

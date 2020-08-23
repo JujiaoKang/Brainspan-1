@@ -1,0 +1,21 @@
+pheno = pData(network.par$net.eset)
+edata = mat
+
+
+##建立两个模型
+mod = model.matrix(~diagnosis, data=pheno)
+mod #全模型包括所有调整变量和感兴趣的变量,这里只有感兴趣的变量
+mod0 = model.matrix(~Sex+brainbank,data=pheno)
+mod0 #空模型只有调整变量,这里没有调整变量,所以只有一个截距intercept
+
+##进行SVA
+n.sv = num.sv(edata,mod) #估计潜在因素的数量
+n.sv
+svobj = sva(edata,mod,mod0,method = c("irw"),n.sv=n.sv) #应用SVA函数来估计代理变量
+str(svobj) #包含4项的列表
+head(svobj$sv)
+tmp <- svobj$sv
+#SV是一个矩阵,其列对应于估计的代理变量,它们可以用于下游分析
+#pprob.gam是每个基因与一个或多个潜在变量相关的后验概率
+#pprob.b是每个基因与感兴趣的变量相关的后验概率
+#n.sv是SVA估计的代理变量数

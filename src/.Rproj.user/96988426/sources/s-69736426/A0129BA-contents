@@ -1,0 +1,11 @@
+platform='hg19'
+result="/cluster/home/chenhy/project/autism/result/PYGL_${platform}/"
+prefix='sample_rel'
+ref_fa='/cluster/apps/refseq/GATK4/hg19/ucsc.hg19.fasta'
+export PERL5LIB=//cluster/apps/software/vcftools_0.1.13/lib/perl5/site_perl/
+
+# 1. merge vcf (--missing-to-ref)
+vcf_file=`perl /cluster/home/dongxinran/tools/get_vcf.pl 16F5105,17F01663,17F06241,17F09093,19F08468,19F04567,19F03905,19F04988,19F05425,19F03457,19F07874,19Y039F,19F07825M,18F00573M,BPD-3F | cut -f 2`	
+vcf_file1=`perl ./xinran_src/vcf2bgvcf.pl $result $vcf_file`
+#bcftools merge --missing-to-ref --force-samples $vcf_file1 -o $result/$prefix.vcf
+bcftools merge --force-samples $vcf_file1 -o $result/$prefix.vcf

@@ -1,0 +1,4 @@
+"0","if(exists(""/cluster/home/chenhy/project/neuron_drivers_landscape/data/gene_article1.csv"")){"
+"0","  gene_article1 <- read.csv(""/cluster/home/chenhy/project/neuron_drivers_landscape/data/gene_article1.csv"")"
+"0","  gene_article1 %>% as.data.frame(table(.$gene)) %>% knitr::kable(.,format = ""html"",row.names = F) %>% kable_styling(full_width = T)"
+"0","}"

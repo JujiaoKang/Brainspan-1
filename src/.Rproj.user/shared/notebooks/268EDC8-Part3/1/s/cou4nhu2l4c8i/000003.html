@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>body{background-color:white;}</style>
+<script src="lib/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="lib/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
+<script src="lib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="lib/kePrint-0.0.1/kePrint.js"></script>
+
+</head>
+<body>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Dis_gene </th>
+   <th style="text-align:right;"> p </th>
+   <th style="text-align:right;"> case_n </th>
+   <th style="text-align:right;"> Mean_case </th>
+   <th style="text-align:right;"> Mean_control </th>
+   <th style="text-align:right;"> Percentage_of_sig_from_permutation </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> GSS </td>
+   <td style="text-align:right;"> 0.0005210 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 0.8170000 </td>
+   <td style="text-align:right;"> 0.3771403 </td>
+   <td style="text-align:right;"> 1.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> SLC29A3 </td>
+   <td style="text-align:right;"> 0.0020322 </td>
+   <td style="text-align:right;"> 13 </td>
+   <td style="text-align:right;"> 0.4656154 </td>
+   <td style="text-align:right;"> 0.3193635 </td>
+   <td style="text-align:right;"> 0.99 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> PAK3 </td>
+   <td style="text-align:right;"> 0.0050306 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 0.7000000 </td>
+   <td style="text-align:right;"> 0.1736396 </td>
+   <td style="text-align:right;"> 0.89 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> BMPR2 </td>
+   <td style="text-align:right;"> 0.0050662 </td>
+   <td style="text-align:right;"> 33 </td>
+   <td style="text-align:right;"> 0.6073529 </td>
+   <td style="text-align:right;"> 0.4448553 </td>
+   <td style="text-align:right;"> 0.95 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> GATA2 </td>
+   <td style="text-align:right;"> 0.0078727 </td>
+   <td style="text-align:right;"> 16 </td>
+   <td style="text-align:right;"> 0.4656250 </td>
+   <td style="text-align:right;"> 0.2712201 </td>
+   <td style="text-align:right;"> 0.99 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> SLC7A7 </td>
+   <td style="text-align:right;"> 0.0091864 </td>
+   <td style="text-align:right;"> 26 </td>
+   <td style="text-align:right;"> 0.6696169 </td>
+   <td style="text-align:right;"> 0.4966442 </td>
+   <td style="text-align:right;"> 0.93 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> KRT5 </td>
+   <td style="text-align:right;"> 0.0098210 </td>
+   <td style="text-align:right;"> 19 </td>
+   <td style="text-align:right;"> 0.4578947 </td>
+   <td style="text-align:right;"> 0.2992021 </td>
+   <td style="text-align:right;"> 1.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> PCK2 </td>
+   <td style="text-align:right;"> 0.0098467 </td>
+   <td style="text-align:right;"> 36 </td>
+   <td style="text-align:right;"> 0.4490024 </td>
+   <td style="text-align:right;"> 0.3200220 </td>
+   <td style="text-align:right;"> 0.94 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> COL5A2 </td>
+   <td style="text-align:right;"> 0.0107446 </td>
+   <td style="text-align:right;"> 47 </td>
+   <td style="text-align:right;"> 0.5133617 </td>
+   <td style="text-align:right;"> 0.3918870 </td>
+   <td style="text-align:right;"> 0.86 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> F13A1 </td>
+   <td style="text-align:right;"> 0.0136462 </td>
+   <td style="text-align:right;"> 29 </td>
+   <td style="text-align:right;"> 0.2825722 </td>
+   <td style="text-align:right;"> 0.1889659 </td>
+   <td style="text-align:right;"> 0.95 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> TBP </td>
+   <td style="text-align:right;"> 0.0142335 </td>
+   <td style="text-align:right;"> 96 </td>
+   <td style="text-align:right;"> 0.7486024 </td>
+   <td style="text-align:right;"> 0.6327217 </td>
+   <td style="text-align:right;"> 0.87 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> DMPK </td>
+   <td style="text-align:right;"> 0.0169373 </td>
+   <td style="text-align:right;"> 66 </td>
+   <td style="text-align:right;"> 0.3603529 </td>
+   <td style="text-align:right;"> 0.2434080 </td>
+   <td style="text-align:right;"> 0.99 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> PEX16 </td>
+   <td style="text-align:right;"> 0.0176620 </td>
+   <td style="text-align:right;"> 34 </td>
+   <td style="text-align:right;"> 0.2175988 </td>
+   <td style="text-align:right;"> 0.1499721 </td>
+   <td style="text-align:right;"> 0.94 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> IFNGR1 </td>
+   <td style="text-align:right;"> 0.0189831 </td>
+   <td style="text-align:right;"> 15 </td>
+   <td style="text-align:right;"> 0.3420000 </td>
+   <td style="text-align:right;"> 0.1888543 </td>
+   <td style="text-align:right;"> 0.94 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> CIITA </td>
+   <td style="text-align:right;"> 0.0193751 </td>
+   <td style="text-align:right;"> 53 </td>
+   <td style="text-align:right;"> 0.2267736 </td>
+   <td style="text-align:right;"> 0.1728144 </td>
+   <td style="text-align:right;"> 0.96 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> SHANK3 </td>
+   <td style="text-align:right;"> 0.0215442 </td>
+   <td style="text-align:right;"> 30 </td>
+   <td style="text-align:right;"> 0.3494333 </td>
+   <td style="text-align:right;"> 0.2074923 </td>
+   <td style="text-align:right;"> 0.89 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> DUOX2 </td>
+   <td style="text-align:right;"> 0.0215614 </td>
+   <td style="text-align:right;"> 162 </td>
+   <td style="text-align:right;"> 0.5365008 </td>
+   <td style="text-align:right;"> 0.4659646 </td>
+   <td style="text-align:right;"> 0.86 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> PDE6A </td>
+   <td style="text-align:right;"> 0.0238821 </td>
+   <td style="text-align:right;"> 44 </td>
+   <td style="text-align:right;"> 0.4889769 </td>
+   <td style="text-align:right;"> 0.3751271 </td>
+   <td style="text-align:right;"> 0.90 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> JAK2 </td>
+   <td style="text-align:right;"> 0.0306443 </td>
+   <td style="text-align:right;"> 25 </td>
+   <td style="text-align:right;"> 0.3310842 </td>
+   <td style="text-align:right;"> 0.2298798 </td>
+   <td style="text-align:right;"> 0.90 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> TAF15 </td>
+   <td style="text-align:right;"> 0.0319102 </td>
+   <td style="text-align:right;"> 34 </td>
+   <td style="text-align:right;"> 0.3568410 </td>
+   <td style="text-align:right;"> 0.2241408 </td>
+   <td style="text-align:right;"> 0.94 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NSDHL </td>
+   <td style="text-align:right;"> 0.0378267 </td>
+   <td style="text-align:right;"> 16 </td>
+   <td style="text-align:right;"> 0.4180287 </td>
+   <td style="text-align:right;"> 0.2066020 </td>
+   <td style="text-align:right;"> 0.92 </td>
+  </tr>
+</tbody>
+</table>
+</body>
+</html>

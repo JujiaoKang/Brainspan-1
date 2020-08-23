@@ -1,0 +1,269 @@
+---
+title: "Autism-Part3"
+author: "chenhy"
+date: "2020/6/22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r library packages, message=FALSE, warning=FALSE, include=FALSE}
+library(NetBID2)
+library(factoextra) #for cluster
+library(tidyverse)
+library(stringr)
+library(cluster)
+library(ggpubr)
+library(qpdf)
+```
+
+```{r get_drivers, message=FALSE, warning=FALSE, include=FALSE}
+## input GSE data
+gse_info <- openxlsx::read.xlsx("/cluster/home/chenhy/project/neuron_drivers_landscape/data/Autism_info.xlsx",1)
+gse_info_select <- gse_info[which(gse_info$GSE_code %in% c("GSE27919067","GSE28521","GSE64018")),c("GSE_code","GPL","Study.type","Case","Control","Age","Race","Tissue")]
+gse_list <- list()
+for (i in 1:nrow(gse_info_select)) {
+  project_main_dir <- "/cluster/home/chenhy/project/neuron_drivers_landscape/data/"
+  project_name <- sprintf('Autism_%s_%s',gse_info_select[i,"GSE_code"],gse_info_select[i,"GPL"])
+  analysis.par <- list()
+  analysis.par$out.dir.DATA <- file.path(project_main_dir,project_name,"DATA/")
+  NetBID.loadRData(analysis.par=analysis.par,step='ms-tab')
+  gse_list[[gse_info_select[i,"GSE_code"]]] <-  analysis.par
+  rm(analysis.par)
+}
+```
+
+
+## EWAS for Autism phenotype
+Significant genes
+```{r sig_genes, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+gene_ttest <- read.csv("/cluster/home/chenhy/project/autism/result/gene_ttest.csv",header = T,stringsAsFactors = F) 
+autism_gene <- read.table(file = "/cluster/home/chenhy/project/neuron_drivers_landscape/data/C1510586_disease_gda_summary.tsv",sep = "\t",quote = "",header = T,stringsAsFactors = F)
+sfari_gene <- read.csv(file = "/cluster/home/chenhy/project/neuron_drivers_landscape/data/SFARI-Gene_genes_05-19-2020release_06-30-2020export.csv",stringsAsFactors = F)
+gene_ttest <- gene_ttest %>% left_join(dplyr::select(autism_gene,Gene,Score_gda) %>% dplyr::rename(Dis_gene=Gene),by="Dis_gene") %>% left_join(dplyr::select(sfari_gene,gene.symbol,gene.score) %>% dplyr::rename(Dis_gene=gene.symbol),by="Dis_gene")
+#out2excel(gene_ttest,out.xlsx = "/cluster/home/chenhy/project/autism/result/sig_gene.xlsx")
+gene_ttest_select <- gene_ttest %>% .[which(.$Percentage_of_sig_from_permutation > 0),] %>% .[,c(1:3,6:8,19:20)] %>% unique() %>% .[order(.$p),]
+out2excel(gene_ttest_select,out.xlsx = "/cluster/home/chenhy/project/autism/result/gene_ttest_select.xlsx")
+if(nrow(gene_ttest_select)<20){
+kableExtra::kable(gene_ttest_select,align = "c") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  kableExtra::scroll_box(width = "100%", height = "100%")
+}else{
+  kableExtra::kable(gene_ttest_select,align = "c") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  kableExtra::scroll_box(width = "100%", height = "500px")
+}
+```
+
+Significant variant
+```{r sig_variant, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+variant_final <- read.csv("/cluster/home/chenhy/project/autism/result/variant_fisher.csv",header = T,stringsAsFactors = F) %>% .[,c(1:3,5:10)] %>% unique() %>% .[-which(.$Odds_ratio<1),]
+variant_final$Gene <- stringr::str_split(variant_final$Dis_variant,":",simplify=T)[,1]
+variant_final$HGVS <- stringr::str_c(stringr::str_split(variant_final$Dis_variant,":",simplify=T)[,2],":",stringr::str_split(variant_final$Dis_variant,":",simplify=T)[,3],":",stringr::str_split(variant_final$Dis_variant,":",simplify=T)[,4])
+variant_final <- variant_final %>% left_join(dplyr::select(autism_gene,Gene,Score_gda),by="Gene") %>% left_join(dplyr::select(sfari_gene,gene.symbol,gene.score) %>% dplyr::rename(Gene=gene.symbol),by="Gene")
+#out2excel(variant_final,out.xlsx = "/cluster/home/chenhy/project/autism/result/sig_variant.xlsx")
+variant_select <- variant_final %>% .[!is.na(.$Percentage_of_sig_from_permutation),] %>% mutate(Percentage_of_sig_from_permutation=Percentage_of_sig_from_permutation*10) %>%  .[which(.$Percentage_of_sig_from_permutation > 0.8),] %>% unique() %>% .[order(.$p),]
+out2excel(variant_select,out.xlsx = "/cluster/home/chenhy/project/autism/result/variant_select.xlsx")
+if(nrow(gene_ttest_select)<20){
+kableExtra::kable(variant_select,align = "c") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  kableExtra::scroll_box(width = "100%", height = "100%")
+}else{
+  kableExtra::kable(variant_select,align = "c") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  kableExtra::scroll_box(width = "100%", height = "500px")
+}
+```
+
+```{r qqplot, echo=F, message=FALSE, warning=FALSE,fig.width=9}
+#qqnorm(variant_final$log_p);qqline(variant_final$log_p,probs = c(0.025,0.975))
+```
+
+### Intersection between EWAS + up/down list
+
+```{r ewas_overlap_sig_gene_driver, message=FALSE, warning=FALSE, include=FALSE}
+#ewas_gene <- unique(gene_ttest$Dis_gene)
+ewas_gene <- unique(variant_final$Gene)
+#ewas_gene <- union(gene_ttest$Dis_gene,variant_final$Gene)
+
+source("get_sig_drivers.R")
+GSE27919067_up <- gse27919067_all_driver[which(gse27919067_all_driver$logFC.ASD.Vs.TD_DA > 0),"originalID_label"]
+GSE28521_up <- gse28521_all_driver[which(gse28521_all_driver$logFC.ASD.Vs.TD_DA > 0),"originalID_label"]
+GSE64018_up <- gse64018_all_driver[which(gse64018_all_driver$logFC.ASD.Vs.TD_DA > 0),"originalID_label"]
+GSE27919067_down <- gse27919067_all_driver[which(gse27919067_all_driver$logFC.ASD.Vs.TD_DA < 0),"originalID_label"]
+GSE28521_down <- gse28521_all_driver[which(gse28521_all_driver$logFC.ASD.Vs.TD_DA < 0),"originalID_label"]
+GSE64018_down <- gse64018_all_driver[which(gse64018_all_driver$logFC.ASD.Vs.TD_DA < 0),"originalID_label"]
+overlap <- c(Reduce(union,list(v1=intersect(GSE27919067_up,GSE28521_up),
+                                  v2=intersect(GSE27919067_up,GSE64018_up),
+                                  v3=intersect(GSE28521_up,GSE64018_up))),
+              Reduce(union,list(v1=intersect(GSE27919067_down,GSE28521_down),
+                                  v2=intersect(GSE27919067_down,GSE64018_down),
+                                  v3=intersect(GSE28521_down,GSE64018_down))))
+mark_gene2 <- intersect(str_split(overlap,"_",simplify = T)[,1],ewas_gene)
+#mark_gene <- union(mark_gene1,mark_gene2)
+mark_gene <- mark_gene2
+gene_ttest_ewas <- gene_ttest_select[which(gene_ttest_select$Dis_gene %in% mark_gene),]
+variant_ewas <- variant_final[which(variant_final$Gene %in% mark_gene),]
+#out2excel(gene_ttest_ewas,out.xlsx = "/cluster/home/chenhy/project/autism/result/gene_ttest_ewas.xlsx")
+#out2excel(variant_ewas,out.xlsx = "/cluster/home/chenhy/project/autism/result/variant_ewas.xlsx")
+```
+
+### Function enrichment of EWAS sig genes
+
+```{r sig_genes_enrichment, echo=TRUE, message=FALSE, warning=FALSE,fig.width=9}
+gs.preload(use_spe='Homo sapiens',update=FALSE)
+use_gene <- read.table(file = "/cluster/apps/refseq/Gene_panel/Clear_seq/gene.lst", col.names = "Dis_gene")
+ench_up <- funcEnrich.Fisher(input_list=gene_ttest$Dis_gene,
+  bg_list=use_gene$Dis_gene,
+  use_gs=c('H','C5'),
+  Pv_thre=0.1,Pv_adj = 'none')
+draw.funcEnrich.cluster(funcEnrich_res=ench_up,top_number=20,gs_cex = 1,
+  gene_cex=1,pv_cex=0.8,
+  cluster_gs=TRUE,cluster_gene = TRUE)
+```
+
+### Venn plot 
+```{r Venn_plot, echo=FALSE, message=FALSE, warning=FALSE,fig.height=6,fig.width=6}
+library(VennDiagram)
+library(grid)
+library(futile.logger)
+overlap_gene <- str_split(overlap,"_",simplify = T)[,1]
+variant_gene <- unique(ewas_gene)
+disgenet_sfari <- c(autism_gene$Gene,sfari_gene$gene.symbol)
+
+venn.plot_up <- venn.diagram(
+  #数据列表
+  x = list(
+    all_drivers = overlap_gene,
+    variant_gene = variant_gene,
+    disgenet_sfari = disgenet_sfari
+  ),
+  filename = NULL,    #保存路径
+  #main="Overlap of up regulated drivers",
+  #main.cex = 2,
+  #sub = "Subtitle",
+  height = 450, 
+  width = 450,
+  resolution =300, 
+  #imagetype="png", 
+  col = "transparent",      #指定图形的圆周边缘颜色  transparent 透明           
+  fill = c(colors()[148], colors()[589], colors()[116]),  #填充颜色
+  alpha = c(0.6, 0.6, 0.6),                                      #透明度
+  label.col = c("orange", "white", "darkorchid4", "white",
+                "white", "darkgreen", "white"),
+  lwd = 0.5,
+  cex = 1.5,    #每个区域label名称的大小
+  fontfamily = "serif",  #字体
+  fontface = "bold",     #字体格式
+  cat.col = c("black"),  #分类颜色 
+  cat.cex = 1,      #每个分类名称大小
+  cat.pos = c(100, 260, 0),        #
+  cat.dist = c(0.12, 0.12, 0.05),    #
+  cat.fontfamily = "serif",     #分类字体
+  rotation.degree =180,        #旋转角度
+  margin = 0.2               #在网格单元中给出图周围空白量的编号
+);
+#可以不保存查看图片，但是效果不佳（命令如下，但是需要首先把filename设置为（filename=NULL））
+grid.draw(venn.plot_up)
+```
+
+## Get candidate driver
+```{r get_candidate_driver, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+source("/cluster/home/chenhy/project/Brainspan/src/draw_function.R")
+candidate_driver_ttest <- gene_ttest_ewas$Dis_gene
+candidate_driver_fisher <- variant_ewas[,"Gene"]
+candidate_driver <- intersect(c(candidate_driver_ttest,candidate_driver_fisher),str_split(overlap,"_",simplify = T)[,1])
+diff_driver <- intersect(c(candidate_driver_ttest,candidate_driver_fisher),disgenet_sfari)
+candidate_driver <- candidate_driver[!candidate_driver %in% diff_driver]
+sprintf("The %s candidate drivers is ",length(candidate_driver))
+sprintf(candidate_driver)
+```
+
+
+### Interpret the significance of the selected driver pattern
+```{r GSEA_plot, eval=FALSE, fig.width=9, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+# Get the DE file
+analysis.par <- gse_list[["GSE64018"]]
+comp_name <- "ASD.Vs.TD"
+DE <- analysis.par$DE[[comp_name]]
+DE_profile <- DE$`Z-statistics`;
+names(DE_profile) <- rownames(DE)
+
+# Use the first driver in the driver list as an example
+use_driver <- "pattern_SIG"
+use_target_genes <- analysis.par$merge.network$target_list[[use_driver]]$target
+use_target_direction <- sign(analysis.par$merge.network$target_list[[use_driver]]$spearman) ## 1/-1
+annot <- sprintf('P-value: %s',signif(analysis.par$final_ms_tab[use_driver,sprintf('P.Value.%s_DA',comp_name)],2))
+
+# Draw classic GSEA plot for one driver
+draw.GSEA(rank_profile=DE_profile,use_genes=use_target_genes,use_direction=use_target_direction,
+          main=sprintf('GSEA plot for driver %s',analysis.par$final_ms_tab[use_driver,'gene_label']),
+          #pdf_file = sprintf('%s/GSEA_each_direction.pdf',analysis.par$out.dir.PLOT),
+          annotation=annot,annotation_cex=1.2,
+          left_annotation='high in ASD',right_annotation='high in TD')
+
+```
+
+
+## Out put to PPT for every candidate driver
+
+```{r ppt, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+gs.preload(use_spe='Homo sapiens',update=FALSE)
+#### Activity level
+project_main_dir <- "/cluster/home/chenhy/project/Brainspan/network/"
+project_name <- "brainspan_nonorm"
+analysis.par <- list()
+analysis.par$out.dir.DATA <- file.path(project_main_dir,project_name,"DATA/")
+NetBID.loadRData(analysis.par=analysis.par,step='act-get')
+phe <- pData(analysis.par$cal.eset) %>% rename(stage=class1)
+  #expression
+pattern_phe <- pData(analysis.par$cal.eset)
+pattern_phe$sample_name <- rownames(pattern_phe)
+
+
+for (i in candidate_driver) {
+  dir.create(sprintf('/cluster/home/chenhy/project/autism/result/plot/%s',i))
+  for (j in names(gse_list)) {
+    group_vars <- c("disease status","ASD.CTL","diagnosis")
+    assign(str_c("p",j),draw_boxplot(gse_list[[j]],group_vars,i,j))
+    draw_network(analysis.par,i)
+  }
+  ggbox <- ggarrange(pGSE27919067,pGSE28521,pGSE64018,ncol=3,nrow = 1,align = "hv",hjust = 10,vjust = 10)
+  ggsave(sprintf("/cluster/home/chenhy/project/autism/result/plot/%s/boxplot.pdf",i), ggbox, width = 20, height = 3)
+
+  pattern_ac <- exprs(analysis.par$merge.ac.eset) %>% .[which(str_detect(rownames(.),i)),] %>% melt()
+  pattern_expr <- melt(exprs(analysis.par$cal.eset)[i,])
+  for (k in 1:nrow(pattern_expr)) {
+    pattern_expr[k,"week_numeric"] <- pattern_phe[which(pattern_phe$sample_name == k),"week_numeric"]
+    pattern_expr[k,"age"] <- pattern_phe[which(pattern_phe$sample_name == k),"age"]
+    pattern_expr[k,"class1"] <- pattern_phe[which(pattern_phe$sample_name == k),"class1"]
+    pattern_ac[k,"week_numeric"] <- pattern_phe[which(pattern_phe$sample_name == k),"week_numeric"]
+    pattern_ac[k,"age"] <- pattern_phe[which(pattern_phe$sample_name == k),"age"]
+    pattern_ac[k,"class1"] <- pattern_phe[which(pattern_phe$sample_name == k),"class1"]
+    }
+  pattern_ac$class1 <- factor(pattern_ac$class1,levels = c("Embryo","Prenatal_1st-Trimester","Prenatal_2nd-Trimester","Prenatal_3rd-Trimester","Childhood","Adulthood"))
+  pattern_expr$class1 <- factor(pattern_expr$class1,levels = c("Embryo","Prenatal_1st-Trimester","Prenatal_2nd-Trimester","Prenatal_3rd-Trimester","Childhood","Adulthood"))
+  pattern_ac$factor_age <- factor(pattern_ac$week_numeric,ordered = F);pattern_ac$age_num <- as.numeric(pattern_ac$factor_age)
+  pattern_expr$factor_age <- factor(pattern_expr$week_numeric,ordered = F);pattern_expr$age_num <- as.numeric(pattern_expr$factor_age)
+  draw_pattern(pattern_ac = pattern_ac,pattern_expr = pattern_expr,i)
+}
+#combine pdf file
+for (i in candidate_driver) {
+  pdf_path <- sprintf("/cluster/home/chenhy/project/autism/result/plot/%s/",i)
+  setwd(pdf_path)
+  pdf_files <- list.files(pdf_path)
+  pdf_combine(pdf_files,output = sprintf("/cluster/home/chenhy/project/autism/result/plot/%s.pdf",i))
+}
+pdf_path <- "/cluster/home/chenhy/project/autism/result/plot/"
+setwd(pdf_path)
+pdf_files <- list.files(pdf_path,"*.pdf")
+pdf_combine(pdf_files,output = "/cluster/home/chenhy/project/autism/result/plot/All_drivers.pdf")
+
+```
+
+
+
+
+

@@ -1,0 +1,16 @@
+#!/usr/bin/perl -w
+
+# /cluster/home/luyulan/project/Combined_Pipeline/data/YAOMING/s394e11019_panel/WGC093788U/WGC093788U_dedup_realign_recal_rawU_snp_indel.vcf.gz /cluster/home/luyulan/project/Combined_Pipeline/data/YAOMING/s394e11040_panel/WB1703160050LU01/WB1703160050LU01.vcf.gz /cluster/home/luyulan/project/Combined_Pipeline/data/YAOMING/s394e11060_panel/R17001732LU01/R17001732LU01.vcf.gz /cluster/home/luyulan/project/Combined_Pipeline/data/YAOMING/C003117008_panel/P17001003LU01/P17001003LU01.vcf.gz /cluster/home/luyulan/project/Combined_Pipeline/data/YAOMING/C0031190149_panel/P19022241LU01/P19022241LU01.vcf.gz /cluster/home/luyulan/project/Combined_Pipeline/data/YAOMING/C0031190077_panel/P19016041LU01/P19016041LU01.vcf.gz /cluster/home/luyulan/project/Combined_Pipeline/data/YAOMING/C0031190066_panel/P19014671LU01/P19014671LU01.vcf.gz /cluster/home/luyulan/project/Combined_Pipeline/data/YAOMING/C0031190082_panel/P19016674LU01/P19016674LU01.vcf.gz /cluster/home/luyulan/project/Combined_Pipeline/data/YAOMING/C0031190090_panel/P19017411LU01/P19017411LU01.vcf.gz /cluster/home/luyulan/project/Combined_Pipeline/data/YAOMING/C0031190058_panel/P19012975LU01/P19012975LU01.vcf.gz /cluster/home/luyulan/project/Combined_Pipeline/data/YAOMING/C0031190140_panel/P19021567LU01/P19021567LU01.vcf.gz
+
+$out_dir = $ARGV[0];
+@all_f = @ARGV[(1..$#ARGV)];
+foreach $f (@all_f){
+	@tmp = split /\//,$f;
+	$filename = $tmp[$#tmp];
+	$out_f = $out_dir."/".$filename;
+	$cmd1 = "zcat $f |bcftools sort|bgzip -c >$out_f";
+	$cmd2 = "tabix $out_f";
+	#print $cmd1."\t".$cmd2."\n";
+	system $cmd1;system $cmd2;
+	print $out_f."\n";
+}

@@ -1,0 +1,5 @@
+"0","sprintf(""The number of SFari reported gene in the overlap of DEG is %s, mean Score_gda equals %s"",nrow(sfari_gene),round(mean(sfari_gene$gene.score,na.rm=T),3))"
+"1","[1]"
+"1"," ""The number of SFari reported gene in the overlap of DEG is 31, mean Score_gda equals 2.379"""
+"1","
+"

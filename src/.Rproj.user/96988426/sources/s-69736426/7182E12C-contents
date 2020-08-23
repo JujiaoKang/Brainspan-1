@@ -1,0 +1,12 @@
+#!/bin/bash
+for data in $(ls -l |grep ^d |cut -d ' ' -f 12)
+	do
+		cd "$data"
+		pwd
+		dos2unix tf.txt
+		dos2unix sig.txt
+		/home/dongxinran/miniconda3/bin/sjaracne local -e input.exp -g tf.txt -n 100 -o  structure_acronym_TF
+		/home/dongxinran/miniconda3/bin/sjaracne local -e input.exp -g sig.txt -n 100 -o  structure_acronym_SIG
+		echo "-------done-------"
+		cd ../
+	done

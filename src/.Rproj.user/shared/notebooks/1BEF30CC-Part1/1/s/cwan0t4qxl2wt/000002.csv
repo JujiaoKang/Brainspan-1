@@ -1,0 +1,8 @@
+"0","autism_gene <- read.table(file = ""/cluster/home/chenhy/project/neuron_drivers_landscape/data/C1510586_disease_gda_summary.tsv"",sep = ""\t"",quote = """",header = T,stringsAsFactors = F)"
+"0","autism_gene_up <- autism_gene[which(autism_gene$Gene %in% intersect_up),]"
+"0","autism_gene_down <- autism_gene[which(autism_gene$Gene %in% intersect_down),]"
+"0","sprintf(""The number of reported gene in the overlap of GSE113834 with GSE102741 is %s(up), mean Score_gda equals %s"",nrow(autism_gene_up),mean(autism_gene_up$Score_gda))"
+"1","[1]"
+"1"," ""The number of reported gene in the overlap of GSE113834 with GSE102741 is 3(up), mean Score_gda equals 0.0133333333333333"""
+"1","
+"

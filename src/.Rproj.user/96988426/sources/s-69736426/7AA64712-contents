@@ -1,0 +1,7 @@
+library(NetBID2)
+transfer_tab_trans <- get_IDtransfer2symbol2type(from_type = 'ensembl_gene_id',
+                                           use_genes = unique(union(rownames(geneRpkm2),rownames(datFPM))),
+                                           dataset='hsapiens_gene_ensembl',
+                                           use_level='transcript')
+write.csv(transfer_tab,file = "/cluster/home/chenhy/project/neuron_drivers_landscape/result/transfer_tab.csv",row.names = F)
+head(use_genes[-which(use_genes %in% transfer_tab$ensembl_gene_id)])

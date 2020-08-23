@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>body{background-color:white;}</style>
+<script src="lib/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="lib/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
+<script src="lib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="lib/kePrint-0.0.1/kePrint.js"></script>
+
+</head>
+<body>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; overflow-x: scroll; width:100%; "><table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">   </th>
+   <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;"> Dis_variant </th>
+   <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;"> p </th>
+   <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;"> case_n </th>
+   <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;"> control_n </th>
+   <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;"> Case_percentage </th>
+   <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;"> Control_percentage </th>
+   <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;"> Odds_ratio </th>
+   <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;"> Oddds_ratio_CI </th>
+   <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;"> Percentage_of_sig_from_permutation </th>
+   <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;"> Gene </th>
+   <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;"> HGVS </th>
+   <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;"> Score_gda </th>
+   <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;"> gene.score </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> 207 </td>
+   <td style="text-align:center;"> TSPEAR:NM_144991:exon1:c.82+14041C&gt;G </td>
+   <td style="text-align:center;"> 0.0000000 </td>
+   <td style="text-align:center;"> 8 </td>
+   <td style="text-align:center;"> 2 </td>
+   <td style="text-align:center;"> 0.07273 </td>
+   <td style="text-align:center;"> 0.0002 </td>
+   <td style="text-align:center;"> 55.53 </td>
+   <td style="text-align:center;"> [11.77-262.02] </td>
+   <td style="text-align:center;"> 1.00 </td>
+   <td style="text-align:center;"> TSPEAR </td>
+   <td style="text-align:center;"> NM_144991:exon1:c.82+14041C&gt;G </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 54 </td>
+   <td style="text-align:center;"> DPP6:NM_130797:exon1:c.109G&gt;A(p.G37S) </td>
+   <td style="text-align:center;"> 0.0000000 </td>
+   <td style="text-align:center;"> 7 </td>
+   <td style="text-align:center;"> 1 </td>
+   <td style="text-align:center;"> 0.06364 </td>
+   <td style="text-align:center;"> 0.0001 </td>
+   <td style="text-align:center;"> 97.05 </td>
+   <td style="text-align:center;"> [11.92-789.95] </td>
+   <td style="text-align:center;"> 1.00 </td>
+   <td style="text-align:center;"> DPP6 </td>
+   <td style="text-align:center;"> NM_130797:exon1:c.109G&gt;A(p.G37S) </td>
+   <td style="text-align:center;"> 0.35 </td>
+   <td style="text-align:center;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 66 </td>
+   <td style="text-align:center;"> EYS:NM_001142800:exon12:c.1767-8434C&gt;T </td>
+   <td style="text-align:center;"> 0.0000006 </td>
+   <td style="text-align:center;"> 6 </td>
+   <td style="text-align:center;"> 1 </td>
+   <td style="text-align:center;"> 0.05455 </td>
+   <td style="text-align:center;"> 0.0001 </td>
+   <td style="text-align:center;"> 83.07 </td>
+   <td style="text-align:center;"> [9.99-690.95] </td>
+   <td style="text-align:center;"> 1.00 </td>
+   <td style="text-align:center;"> EYS </td>
+   <td style="text-align:center;"> NM_001142800:exon12:c.1767-8434C&gt;T </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 63 </td>
+   <td style="text-align:center;"> ERLIN2:XM_005273391:exon1:c.142G&gt;A </td>
+   <td style="text-align:center;"> 0.0000017 </td>
+   <td style="text-align:center;"> 7 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 0.06364 </td>
+   <td style="text-align:center;"> 0.0004 </td>
+   <td style="text-align:center;"> 24.26 </td>
+   <td style="text-align:center;"> [7.08-83.06] </td>
+   <td style="text-align:center;"> 1.00 </td>
+   <td style="text-align:center;"> ERLIN2 </td>
+   <td style="text-align:center;"> XM_005273391:exon1:c.142G&gt;A </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 24 </td>
+   <td style="text-align:center;"> BBS2:NM_001324357:exon10:c.1111_1113del </td>
+   <td style="text-align:center;"> 0.0000038 </td>
+   <td style="text-align:center;"> 7 </td>
+   <td style="text-align:center;"> 5 </td>
+   <td style="text-align:center;"> 0.06364 </td>
+   <td style="text-align:center;"> 0.0005 </td>
+   <td style="text-align:center;"> 19.40 </td>
+   <td style="text-align:center;"> [6.14-61.29] </td>
+   <td style="text-align:center;"> 1.00 </td>
+   <td style="text-align:center;"> BBS2 </td>
+   <td style="text-align:center;"> NM_001324357:exon10:c.1111_1113del </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 167 </td>
+   <td style="text-align:center;"> RP1L1:NM_178857:exon2:c.331A&gt;G(p.K111E) </td>
+   <td style="text-align:center;"> 0.0000061 </td>
+   <td style="text-align:center;"> 8 </td>
+   <td style="text-align:center;"> 9 </td>
+   <td style="text-align:center;"> 0.07273 </td>
+   <td style="text-align:center;"> 0.0009 </td>
+   <td style="text-align:center;"> 12.33 </td>
+   <td style="text-align:center;"> [4.74-32.06] </td>
+   <td style="text-align:center;"> 1.00 </td>
+   <td style="text-align:center;"> RP1L1 </td>
+   <td style="text-align:center;"> NM_178857:exon2:c.331A&gt;G(p.K111E) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 49 </td>
+   <td style="text-align:center;"> DMPK:NM_001081563:exon14:c.*260_*283del </td>
+   <td style="text-align:center;"> 0.0000119 </td>
+   <td style="text-align:center;"> 15 </td>
+   <td style="text-align:center;"> 47 </td>
+   <td style="text-align:center;"> 0.13636 </td>
+   <td style="text-align:center;"> 0.0047 </td>
+   <td style="text-align:center;"> 4.46 </td>
+   <td style="text-align:center;"> [2.48-8.01] </td>
+   <td style="text-align:center;"> 0.99 </td>
+   <td style="text-align:center;"> DMPK </td>
+   <td style="text-align:center;"> NM_001081563:exon14:c.*260_*283del </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 109 </td>
+   <td style="text-align:center;"> LRRK1:NM_024652:exon9:c.1118-2del </td>
+   <td style="text-align:center;"> 0.0000159 </td>
+   <td style="text-align:center;"> 6 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 0.05455 </td>
+   <td style="text-align:center;"> 0.0004 </td>
+   <td style="text-align:center;"> 20.76 </td>
+   <td style="text-align:center;"> [5.84-73.74] </td>
+   <td style="text-align:center;"> 1.00 </td>
+   <td style="text-align:center;"> LRRK1 </td>
+   <td style="text-align:center;"> NM_024652:exon9:c.1118-2del </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 210 </td>
+   <td style="text-align:center;"> TTC7A:NM_020458:exon9:c.1129C&gt;G(p.Q377E) </td>
+   <td style="text-align:center;"> 0.0000189 </td>
+   <td style="text-align:center;"> 12 </td>
+   <td style="text-align:center;"> 31 </td>
+   <td style="text-align:center;"> 0.10909 </td>
+   <td style="text-align:center;"> 0.0031 </td>
+   <td style="text-align:center;"> 5.39 </td>
+   <td style="text-align:center;"> [2.76-10.54] </td>
+   <td style="text-align:center;"> 1.00 </td>
+   <td style="text-align:center;"> TTC7A </td>
+   <td style="text-align:center;"> NM_020458:exon9:c.1129C&gt;G(p.Q377E) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 199 </td>
+   <td style="text-align:center;"> TLL1:NM_001204760:exon10:c.1160T&gt;C(p.V387A) </td>
+   <td style="text-align:center;"> 0.0000267 </td>
+   <td style="text-align:center;"> 5 </td>
+   <td style="text-align:center;"> 2 </td>
+   <td style="text-align:center;"> 0.04545 </td>
+   <td style="text-align:center;"> 0.0002 </td>
+   <td style="text-align:center;"> 34.56 </td>
+   <td style="text-align:center;"> [6.69-178.44] </td>
+   <td style="text-align:center;"> 1.00 </td>
+   <td style="text-align:center;"> TLL1 </td>
+   <td style="text-align:center;"> NM_001204760:exon10:c.1160T&gt;C(p.V387A) </td>
+   <td style="text-align:center;"> 0.02 </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 223 </td>
+   <td style="text-align:center;"> VPS33B:NM_018668:exon4:c.289+163_289+164del </td>
+   <td style="text-align:center;"> 0.0000374 </td>
+   <td style="text-align:center;"> 82 </td>
+   <td style="text-align:center;"> 689 </td>
+   <td style="text-align:center;"> 0.74545 </td>
+   <td style="text-align:center;"> 0.0689 </td>
+   <td style="text-align:center;"> 1.72 </td>
+   <td style="text-align:center;"> [1.35-2.19] </td>
+   <td style="text-align:center;"> 1.00 </td>
+   <td style="text-align:center;"> VPS33B </td>
+   <td style="text-align:center;"> NM_018668:exon4:c.289+163_289+164del </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 74 </td>
+   <td style="text-align:center;"> FRG1:NM_004477:exon6:c.451G&gt;A(p.A151T) </td>
+   <td style="text-align:center;"> 0.0000398 </td>
+   <td style="text-align:center;"> 12 </td>
+   <td style="text-align:center;"> 34 </td>
+   <td style="text-align:center;"> 0.10909 </td>
+   <td style="text-align:center;"> 0.0034 </td>
+   <td style="text-align:center;"> 4.91 </td>
+   <td style="text-align:center;"> [2.53-9.53] </td>
+   <td style="text-align:center;"> 1.00 </td>
+   <td style="text-align:center;"> FRG1 </td>
+   <td style="text-align:center;"> NM_004477:exon6:c.451G&gt;A(p.A151T) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 22 </td>
+   <td style="text-align:center;"> ATXN1:NM_000332:exon3:c.-705G&gt;A </td>
+   <td style="text-align:center;"> 0.0000671 </td>
+   <td style="text-align:center;"> 5 </td>
+   <td style="text-align:center;"> 3 </td>
+   <td style="text-align:center;"> 0.04545 </td>
+   <td style="text-align:center;"> 0.0003 </td>
+   <td style="text-align:center;"> 23.04 </td>
+   <td style="text-align:center;"> [5.49-96.59] </td>
+   <td style="text-align:center;"> 1.00 </td>
+   <td style="text-align:center;"> ATXN1 </td>
+   <td style="text-align:center;"> NM_000332:exon3:c.-705G&gt;A </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 91 </td>
+   <td style="text-align:center;"> HSD17B3:NM_000197:exon1:c.73G&gt;A(p.V25M) </td>
+   <td style="text-align:center;"> 0.0001089 </td>
+   <td style="text-align:center;"> 6 </td>
+   <td style="text-align:center;"> 7 </td>
+   <td style="text-align:center;"> 0.05455 </td>
+   <td style="text-align:center;"> 0.0007 </td>
+   <td style="text-align:center;"> 11.86 </td>
+   <td style="text-align:center;"> [3.97-35.38] </td>
+   <td style="text-align:center;"> 1.00 </td>
+   <td style="text-align:center;"> HSD17B3 </td>
+   <td style="text-align:center;"> NM_000197:exon1:c.73G&gt;A(p.V25M) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 15 </td>
+   <td style="text-align:center;"> ANO10:NM_018075:exon8:c.1219-7_1219-6del </td>
+   <td style="text-align:center;"> 0.0001267 </td>
+   <td style="text-align:center;"> 11 </td>
+   <td style="text-align:center;"> 33 </td>
+   <td style="text-align:center;"> 0.10000 </td>
+   <td style="text-align:center;"> 0.0033 </td>
+   <td style="text-align:center;"> 4.63 </td>
+   <td style="text-align:center;"> [2.33-9.21] </td>
+   <td style="text-align:center;"> 1.00 </td>
+   <td style="text-align:center;"> ANO10 </td>
+   <td style="text-align:center;"> NM_018075:exon8:c.1219-7_1219-6del </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 108 </td>
+   <td style="text-align:center;"> LRP2:NM_004525:exon22:c.3295C&gt;G(p.H1099D) </td>
+   <td style="text-align:center;"> 0.0001425 </td>
+   <td style="text-align:center;"> 5 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 0.04545 </td>
+   <td style="text-align:center;"> 0.0004 </td>
+   <td style="text-align:center;"> 17.28 </td>
+   <td style="text-align:center;"> [4.63-64.48] </td>
+   <td style="text-align:center;"> 1.00 </td>
+   <td style="text-align:center;"> LRP2 </td>
+   <td style="text-align:center;"> NM_004525:exon22:c.3295C&gt;G(p.H1099D) </td>
+   <td style="text-align:center;"> 0.01 </td>
+   <td style="text-align:center;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 174 </td>
+   <td style="text-align:center;"> SI:NM_001041:exon30:c.3540T&gt;G(p.T1180T) </td>
+   <td style="text-align:center;"> 0.0001425 </td>
+   <td style="text-align:center;"> 5 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 0.04545 </td>
+   <td style="text-align:center;"> 0.0004 </td>
+   <td style="text-align:center;"> 17.28 </td>
+   <td style="text-align:center;"> [4.63-64.48] </td>
+   <td style="text-align:center;"> 1.00 </td>
+   <td style="text-align:center;"> SI </td>
+   <td style="text-align:center;"> NM_001041:exon30:c.3540T&gt;G(p.T1180T) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 68 </td>
+   <td style="text-align:center;"> FAN1:NM_014967:exon15:c.*427_*426insTCTCCTTGGAAG </td>
+   <td style="text-align:center;"> 0.0002691 </td>
+   <td style="text-align:center;"> 5 </td>
+   <td style="text-align:center;"> 5 </td>
+   <td style="text-align:center;"> 0.04545 </td>
+   <td style="text-align:center;"> 0.0005 </td>
+   <td style="text-align:center;"> 13.82 </td>
+   <td style="text-align:center;"> [3.99-47.85] </td>
+   <td style="text-align:center;"> 1.00 </td>
+   <td style="text-align:center;"> FAN1 </td>
+   <td style="text-align:center;"> NM_014967:exon15:c.*427_*426insTCTCCTTGGAAG </td>
+   <td style="text-align:center;"> 0.01 </td>
+   <td style="text-align:center;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 118 </td>
+   <td style="text-align:center;"> MTHFR:NM_005957:exon12:c.*2805A&gt;G </td>
+   <td style="text-align:center;"> 0.0002691 </td>
+   <td style="text-align:center;"> 5 </td>
+   <td style="text-align:center;"> 5 </td>
+   <td style="text-align:center;"> 0.04545 </td>
+   <td style="text-align:center;"> 0.0005 </td>
+   <td style="text-align:center;"> 13.82 </td>
+   <td style="text-align:center;"> [3.99-47.85] </td>
+   <td style="text-align:center;"> 0.99 </td>
+   <td style="text-align:center;"> MTHFR </td>
+   <td style="text-align:center;"> NM_005957:exon12:c.*2805A&gt;G </td>
+   <td style="text-align:center;"> 0.10 </td>
+   <td style="text-align:center;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 33 </td>
+   <td style="text-align:center;"> CHUK:NM_001278:exon10:c.991G&gt;T(p.D331Y) </td>
+   <td style="text-align:center;"> 0.0002832 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 2 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0002 </td>
+   <td style="text-align:center;"> 27.61 </td>
+   <td style="text-align:center;"> [5.05-150.98] </td>
+   <td style="text-align:center;"> 1.00 </td>
+   <td style="text-align:center;"> CHUK </td>
+   <td style="text-align:center;"> NM_001278:exon10:c.991G&gt;T(p.D331Y) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 127 </td>
+   <td style="text-align:center;"> NF1:NM_000267:exon36:c.4773-30170A&gt;G </td>
+   <td style="text-align:center;"> 0.0002832 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 2 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0002 </td>
+   <td style="text-align:center;"> 27.61 </td>
+   <td style="text-align:center;"> [5.05-150.98] </td>
+   <td style="text-align:center;"> 1.00 </td>
+   <td style="text-align:center;"> NF1 </td>
+   <td style="text-align:center;"> NM_000267:exon36:c.4773-30170A&gt;G </td>
+   <td style="text-align:center;"> 0.10 </td>
+   <td style="text-align:center;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 211 </td>
+   <td style="text-align:center;"> TTLL5:NM_015072:exon15:c.1269C&gt;A(p.F423L) </td>
+   <td style="text-align:center;"> 0.0002832 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 2 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0002 </td>
+   <td style="text-align:center;"> 27.61 </td>
+   <td style="text-align:center;"> [5.05-150.98] </td>
+   <td style="text-align:center;"> 0.97 </td>
+   <td style="text-align:center;"> TTLL5 </td>
+   <td style="text-align:center;"> NM_015072:exon15:c.1269C&gt;A(p.F423L) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 186 </td>
+   <td style="text-align:center;"> SRD5A2:NM_000348:exon4:c.679G&gt;A </td>
+   <td style="text-align:center;"> 0.0005196 </td>
+   <td style="text-align:center;"> 14 </td>
+   <td style="text-align:center;"> 62 </td>
+   <td style="text-align:center;"> 0.12727 </td>
+   <td style="text-align:center;"> 0.0062 </td>
+   <td style="text-align:center;"> 3.14 </td>
+   <td style="text-align:center;"> [1.75-5.64] </td>
+   <td style="text-align:center;"> 0.91 </td>
+   <td style="text-align:center;"> SRD5A2 </td>
+   <td style="text-align:center;"> NM_000348:exon4:c.679G&gt;A </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 10 </td>
+   <td style="text-align:center;"> ALG6:NM_013339:exon2:c.22A&gt;T(p.T8S) </td>
+   <td style="text-align:center;"> 0.0006252 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 3 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0003 </td>
+   <td style="text-align:center;"> 18.40 </td>
+   <td style="text-align:center;"> [4.11-82.38] </td>
+   <td style="text-align:center;"> 0.96 </td>
+   <td style="text-align:center;"> ALG6 </td>
+   <td style="text-align:center;"> NM_013339:exon2:c.22A&gt;T(p.T8S) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 43 </td>
+   <td style="text-align:center;"> CSF3R:NM_000760:exon3:c.14G&gt;C(p.G5A) </td>
+   <td style="text-align:center;"> 0.0006252 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 3 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0003 </td>
+   <td style="text-align:center;"> 18.40 </td>
+   <td style="text-align:center;"> [4.11-82.38] </td>
+   <td style="text-align:center;"> 0.96 </td>
+   <td style="text-align:center;"> CSF3R </td>
+   <td style="text-align:center;"> NM_000760:exon3:c.14G&gt;C(p.G5A) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 104 </td>
+   <td style="text-align:center;"> LDLRAP1:NM_015627:exon2:c.201G&gt;A(p.S67S) </td>
+   <td style="text-align:center;"> 0.0006252 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 3 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0003 </td>
+   <td style="text-align:center;"> 18.40 </td>
+   <td style="text-align:center;"> [4.11-82.38] </td>
+   <td style="text-align:center;"> 0.89 </td>
+   <td style="text-align:center;"> LDLRAP1 </td>
+   <td style="text-align:center;"> NM_015627:exon2:c.201G&gt;A(p.S67S) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 213 </td>
+   <td style="text-align:center;"> TTN:NM_001267550:exon339:c.94145G&gt;A(p.R31382H) </td>
+   <td style="text-align:center;"> 0.0006252 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 3 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0003 </td>
+   <td style="text-align:center;"> 18.40 </td>
+   <td style="text-align:center;"> [4.11-82.38] </td>
+   <td style="text-align:center;"> 0.97 </td>
+   <td style="text-align:center;"> TTN </td>
+   <td style="text-align:center;"> NM_001267550:exon339:c.94145G&gt;A(p.R31382H) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 228 </td>
+   <td style="text-align:center;"> ZNF711:NM_021998:exon7:c.917-25_917-21del </td>
+   <td style="text-align:center;"> 0.0006252 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 3 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0003 </td>
+   <td style="text-align:center;"> 18.40 </td>
+   <td style="text-align:center;"> [4.11-82.38] </td>
+   <td style="text-align:center;"> 0.98 </td>
+   <td style="text-align:center;"> ZNF711 </td>
+   <td style="text-align:center;"> NM_021998:exon7:c.917-25_917-21del </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 212 </td>
+   <td style="text-align:center;"> TTN:NM_001267550:exon326:c.80554C&gt;T(p.R26852C) </td>
+   <td style="text-align:center;"> 0.0006498 </td>
+   <td style="text-align:center;"> 20 </td>
+   <td style="text-align:center;"> 112 </td>
+   <td style="text-align:center;"> 0.18182 </td>
+   <td style="text-align:center;"> 0.0112 </td>
+   <td style="text-align:center;"> 2.49 </td>
+   <td style="text-align:center;"> [1.54-4.04] </td>
+   <td style="text-align:center;"> 0.95 </td>
+   <td style="text-align:center;"> TTN </td>
+   <td style="text-align:center;"> NM_001267550:exon326:c.80554C&gt;T(p.R26852C) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 59 </td>
+   <td style="text-align:center;"> EIF4G1:NM_198241:exon10:c.1394A&gt;C(p.E465A) </td>
+   <td style="text-align:center;"> 0.0006836 </td>
+   <td style="text-align:center;"> 16 </td>
+   <td style="text-align:center;"> 80 </td>
+   <td style="text-align:center;"> 0.14545 </td>
+   <td style="text-align:center;"> 0.0080 </td>
+   <td style="text-align:center;"> 2.79 </td>
+   <td style="text-align:center;"> [1.62-4.79] </td>
+   <td style="text-align:center;"> 0.96 </td>
+   <td style="text-align:center;"> EIF4G1 </td>
+   <td style="text-align:center;"> NM_198241:exon10:c.1394A&gt;C(p.E465A) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 95 </td>
+   <td style="text-align:center;"> IFT140:NM_014714:exon20:c.2400-15232C&gt;T </td>
+   <td style="text-align:center;"> 0.0011574 </td>
+   <td style="text-align:center;"> 5 </td>
+   <td style="text-align:center;"> 8 </td>
+   <td style="text-align:center;"> 0.04545 </td>
+   <td style="text-align:center;"> 0.0008 </td>
+   <td style="text-align:center;"> 8.63 </td>
+   <td style="text-align:center;"> [2.82-26.46] </td>
+   <td style="text-align:center;"> 0.94 </td>
+   <td style="text-align:center;"> IFT140 </td>
+   <td style="text-align:center;"> NM_014714:exon20:c.2400-15232C&gt;T </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 110 </td>
+   <td style="text-align:center;"> LTBP2:NM_000428:exon10:c.1979G&gt;A(p.R660H) </td>
+   <td style="text-align:center;"> 0.0011832 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0004 </td>
+   <td style="text-align:center;"> 13.80 </td>
+   <td style="text-align:center;"> [3.44-55.3] </td>
+   <td style="text-align:center;"> 0.91 </td>
+   <td style="text-align:center;"> LTBP2 </td>
+   <td style="text-align:center;"> NM_000428:exon10:c.1979G&gt;A(p.R660H) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 55 </td>
+   <td style="text-align:center;"> DTNBP1:NM_032122:exon7:c.489-7C&gt;T </td>
+   <td style="text-align:center;"> 0.0011842 </td>
+   <td style="text-align:center;"> 3 </td>
+   <td style="text-align:center;"> 1 </td>
+   <td style="text-align:center;"> 0.02727 </td>
+   <td style="text-align:center;"> 0.0001 </td>
+   <td style="text-align:center;"> 41.35 </td>
+   <td style="text-align:center;"> [4.3-398.07] </td>
+   <td style="text-align:center;"> 0.91 </td>
+   <td style="text-align:center;"> DTNBP1 </td>
+   <td style="text-align:center;"> NM_032122:exon7:c.489-7C&gt;T </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 75 </td>
+   <td style="text-align:center;"> FUS:NM_004960:exon6:c.764+167T&gt;C </td>
+   <td style="text-align:center;"> 0.0011842 </td>
+   <td style="text-align:center;"> 3 </td>
+   <td style="text-align:center;"> 1 </td>
+   <td style="text-align:center;"> 0.02727 </td>
+   <td style="text-align:center;"> 0.0001 </td>
+   <td style="text-align:center;"> 41.35 </td>
+   <td style="text-align:center;"> [4.3-398.07] </td>
+   <td style="text-align:center;"> 0.89 </td>
+   <td style="text-align:center;"> FUS </td>
+   <td style="text-align:center;"> NM_004960:exon6:c.764+167T&gt;C </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 137 </td>
+   <td style="text-align:center;"> OCLN:NM_002538:exon6:c.1111G&gt;T(p.G371C) </td>
+   <td style="text-align:center;"> 0.0011842 </td>
+   <td style="text-align:center;"> 3 </td>
+   <td style="text-align:center;"> 1 </td>
+   <td style="text-align:center;"> 0.02727 </td>
+   <td style="text-align:center;"> 0.0001 </td>
+   <td style="text-align:center;"> 41.35 </td>
+   <td style="text-align:center;"> [4.3-398.07] </td>
+   <td style="text-align:center;"> 0.81 </td>
+   <td style="text-align:center;"> OCLN </td>
+   <td style="text-align:center;"> NM_002538:exon6:c.1111G&gt;T(p.G371C) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 143 </td>
+   <td style="text-align:center;"> PAX9:NM_006194:exon3:c.631+118T&gt;A </td>
+   <td style="text-align:center;"> 0.0011842 </td>
+   <td style="text-align:center;"> 3 </td>
+   <td style="text-align:center;"> 1 </td>
+   <td style="text-align:center;"> 0.02727 </td>
+   <td style="text-align:center;"> 0.0001 </td>
+   <td style="text-align:center;"> 41.35 </td>
+   <td style="text-align:center;"> [4.3-398.07] </td>
+   <td style="text-align:center;"> 0.88 </td>
+   <td style="text-align:center;"> PAX9 </td>
+   <td style="text-align:center;"> NM_006194:exon3:c.631+118T&gt;A </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 41 </td>
+   <td style="text-align:center;"> CPS1:NM_001875:exon2:c.186C&gt;T(p.G62G) </td>
+   <td style="text-align:center;"> 0.0012106 </td>
+   <td style="text-align:center;"> 6 </td>
+   <td style="text-align:center;"> 13 </td>
+   <td style="text-align:center;"> 0.05455 </td>
+   <td style="text-align:center;"> 0.0013 </td>
+   <td style="text-align:center;"> 6.38 </td>
+   <td style="text-align:center;"> [2.42-16.84] </td>
+   <td style="text-align:center;"> 0.84 </td>
+   <td style="text-align:center;"> CPS1 </td>
+   <td style="text-align:center;"> NM_001875:exon2:c.186C&gt;T(p.G62G) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 67 </td>
+   <td style="text-align:center;"> EYS:NM_001142800:exon26:c.4115C&gt;T(p.P1372L) </td>
+   <td style="text-align:center;"> 0.0016312 </td>
+   <td style="text-align:center;"> 6 </td>
+   <td style="text-align:center;"> 14 </td>
+   <td style="text-align:center;"> 0.05455 </td>
+   <td style="text-align:center;"> 0.0014 </td>
+   <td style="text-align:center;"> 5.93 </td>
+   <td style="text-align:center;"> [2.27-15.47] </td>
+   <td style="text-align:center;"> 0.83 </td>
+   <td style="text-align:center;"> EYS </td>
+   <td style="text-align:center;"> NM_001142800:exon26:c.4115C&gt;T(p.P1372L) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 82 </td>
+   <td style="text-align:center;"> GRIN2A:NM_000833:exon13:c.2532G&gt;A(p.K844K) </td>
+   <td style="text-align:center;"> 0.0017006 </td>
+   <td style="text-align:center;"> 5 </td>
+   <td style="text-align:center;"> 9 </td>
+   <td style="text-align:center;"> 0.04545 </td>
+   <td style="text-align:center;"> 0.0009 </td>
+   <td style="text-align:center;"> 7.67 </td>
+   <td style="text-align:center;"> [2.56-22.96] </td>
+   <td style="text-align:center;"> 0.91 </td>
+   <td style="text-align:center;"> GRIN2A </td>
+   <td style="text-align:center;"> NM_000833:exon13:c.2532G&gt;A(p.K844K) </td>
+   <td style="text-align:center;"> 0.04 </td>
+   <td style="text-align:center;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 26 </td>
+   <td style="text-align:center;"> CACNA1A:NM_001127221:exon20:c.3122C&gt;G(p.S1041W) </td>
+   <td style="text-align:center;"> 0.0020158 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 5 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0005 </td>
+   <td style="text-align:center;"> 11.04 </td>
+   <td style="text-align:center;"> [2.96-41.2] </td>
+   <td style="text-align:center;"> 0.98 </td>
+   <td style="text-align:center;"> CACNA1A </td>
+   <td style="text-align:center;"> NM_001127221:exon20:c.3122C&gt;G(p.S1041W) </td>
+   <td style="text-align:center;"> 0.01 </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 44 </td>
+   <td style="text-align:center;"> CTLA4:NM_005214:exon3:c.563A&gt;G(p.K188R) </td>
+   <td style="text-align:center;"> 0.0020158 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 5 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0005 </td>
+   <td style="text-align:center;"> 11.04 </td>
+   <td style="text-align:center;"> [2.96-41.2] </td>
+   <td style="text-align:center;"> 0.81 </td>
+   <td style="text-align:center;"> CTLA4 </td>
+   <td style="text-align:center;"> NM_005214:exon3:c.563A&gt;G(p.K188R) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 131 </td>
+   <td style="text-align:center;"> NSDHL:NM_015922:exon7:c.749C&gt;T(p.A250V) </td>
+   <td style="text-align:center;"> 0.0020158 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 5 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0005 </td>
+   <td style="text-align:center;"> 11.04 </td>
+   <td style="text-align:center;"> [2.96-41.2] </td>
+   <td style="text-align:center;"> 0.92 </td>
+   <td style="text-align:center;"> NSDHL </td>
+   <td style="text-align:center;"> NM_015922:exon7:c.749C&gt;T(p.A250V) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 203 </td>
+   <td style="text-align:center;"> TSC1:NM_000368:exon15:c.1590C&gt;T(p.S530S) </td>
+   <td style="text-align:center;"> 0.0020158 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 5 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0005 </td>
+   <td style="text-align:center;"> 11.04 </td>
+   <td style="text-align:center;"> [2.96-41.2] </td>
+   <td style="text-align:center;"> 0.81 </td>
+   <td style="text-align:center;"> TSC1 </td>
+   <td style="text-align:center;"> NM_000368:exon15:c.1590C&gt;T(p.S530S) </td>
+   <td style="text-align:center;"> 0.26 </td>
+   <td style="text-align:center;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 103 </td>
+   <td style="text-align:center;"> KRT6A:NM_005554:exon2:c.686T&gt;C(p.V229A) </td>
+   <td style="text-align:center;"> 0.0021542 </td>
+   <td style="text-align:center;"> 6 </td>
+   <td style="text-align:center;"> 15 </td>
+   <td style="text-align:center;"> 0.05455 </td>
+   <td style="text-align:center;"> 0.0015 </td>
+   <td style="text-align:center;"> 5.53 </td>
+   <td style="text-align:center;"> [2.14-14.3] </td>
+   <td style="text-align:center;"> 0.85 </td>
+   <td style="text-align:center;"> KRT6A </td>
+   <td style="text-align:center;"> NM_005554:exon2:c.686T&gt;C(p.V229A) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 227 </td>
+   <td style="text-align:center;"> ZNF469:NM_001367624:exon1:c.11546G&gt;A(p.R3849Q) </td>
+   <td style="text-align:center;"> 0.0021542 </td>
+   <td style="text-align:center;"> 6 </td>
+   <td style="text-align:center;"> 15 </td>
+   <td style="text-align:center;"> 0.05455 </td>
+   <td style="text-align:center;"> 0.0015 </td>
+   <td style="text-align:center;"> 5.53 </td>
+   <td style="text-align:center;"> [2.14-14.3] </td>
+   <td style="text-align:center;"> 0.93 </td>
+   <td style="text-align:center;"> ZNF469 </td>
+   <td style="text-align:center;"> NM_001367624:exon1:c.11546G&gt;A(p.R3849Q) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 37 </td>
+   <td style="text-align:center;"> COL6A2:NM_001849:exon25:c.1817-10_1817-9insCC </td>
+   <td style="text-align:center;"> 0.0027944 </td>
+   <td style="text-align:center;"> 6 </td>
+   <td style="text-align:center;"> 16 </td>
+   <td style="text-align:center;"> 0.05455 </td>
+   <td style="text-align:center;"> 0.0016 </td>
+   <td style="text-align:center;"> 5.18 </td>
+   <td style="text-align:center;"> [2.02-13.29] </td>
+   <td style="text-align:center;"> 0.89 </td>
+   <td style="text-align:center;"> COL6A2 </td>
+   <td style="text-align:center;"> NM_001849:exon25:c.1817-10_1817-9insCC </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 101 </td>
+   <td style="text-align:center;"> KRT13:NM_002274:exon1:c.205_217delinsT(p.L69_G72del) </td>
+   <td style="text-align:center;"> 0.0027944 </td>
+   <td style="text-align:center;"> 6 </td>
+   <td style="text-align:center;"> 16 </td>
+   <td style="text-align:center;"> 0.05455 </td>
+   <td style="text-align:center;"> 0.0016 </td>
+   <td style="text-align:center;"> 5.18 </td>
+   <td style="text-align:center;"> [2.02-13.29] </td>
+   <td style="text-align:center;"> 0.88 </td>
+   <td style="text-align:center;"> KRT13 </td>
+   <td style="text-align:center;"> NM_002274:exon1:c.205_217delinsT(p.L69_G72del) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 133 </td>
+   <td style="text-align:center;"> OAT:NM_000274:exon2:c.77C&gt;T(p.T26I) </td>
+   <td style="text-align:center;"> 0.0028109 </td>
+   <td style="text-align:center;"> 3 </td>
+   <td style="text-align:center;"> 2 </td>
+   <td style="text-align:center;"> 0.02727 </td>
+   <td style="text-align:center;"> 0.0002 </td>
+   <td style="text-align:center;"> 20.67 </td>
+   <td style="text-align:center;"> [3.45-123.93] </td>
+   <td style="text-align:center;"> 0.83 </td>
+   <td style="text-align:center;"> OAT </td>
+   <td style="text-align:center;"> NM_000274:exon2:c.77C&gt;T(p.T26I) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 200 </td>
+   <td style="text-align:center;"> TMCO1:NM_019026:exon6:c.477-7C&gt;T </td>
+   <td style="text-align:center;"> 0.0031803 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 6 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0006 </td>
+   <td style="text-align:center;"> 9.20 </td>
+   <td style="text-align:center;"> [2.59-32.67] </td>
+   <td style="text-align:center;"> 0.94 </td>
+   <td style="text-align:center;"> TMCO1 </td>
+   <td style="text-align:center;"> NM_019026:exon6:c.477-7C&gt;T </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 166 </td>
+   <td style="text-align:center;"> RNASEL:NM_021133:exon5:c.1905G&gt;A(p.K635K) </td>
+   <td style="text-align:center;"> 0.0034249 </td>
+   <td style="text-align:center;"> 19 </td>
+   <td style="text-align:center;"> 121 </td>
+   <td style="text-align:center;"> 0.17273 </td>
+   <td style="text-align:center;"> 0.0121 </td>
+   <td style="text-align:center;"> 2.19 </td>
+   <td style="text-align:center;"> [1.34-3.57] </td>
+   <td style="text-align:center;"> 0.83 </td>
+   <td style="text-align:center;"> RNASEL </td>
+   <td style="text-align:center;"> NM_021133:exon5:c.1905G&gt;A(p.K635K) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 171 </td>
+   <td style="text-align:center;"> SEMA3A:NM_006080:exon17:c.2200C&gt;T(p.R734W) </td>
+   <td style="text-align:center;"> 0.0035669 </td>
+   <td style="text-align:center;"> 6 </td>
+   <td style="text-align:center;"> 17 </td>
+   <td style="text-align:center;"> 0.05455 </td>
+   <td style="text-align:center;"> 0.0017 </td>
+   <td style="text-align:center;"> 4.88 </td>
+   <td style="text-align:center;"> [1.92-12.41] </td>
+   <td style="text-align:center;"> 0.91 </td>
+   <td style="text-align:center;"> SEMA3A </td>
+   <td style="text-align:center;"> NM_006080:exon17:c.2200C&gt;T(p.R734W) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 4 </td>
+   <td style="text-align:center;"> ADAMTS17:NM_139057:exon1:c.-20G&gt;C </td>
+   <td style="text-align:center;"> 0.0038091 </td>
+   <td style="text-align:center;"> 21 </td>
+   <td style="text-align:center;"> 140 </td>
+   <td style="text-align:center;"> 0.19091 </td>
+   <td style="text-align:center;"> 0.0140 </td>
+   <td style="text-align:center;"> 2.09 </td>
+   <td style="text-align:center;"> [1.31-3.33] </td>
+   <td style="text-align:center;"> 0.90 </td>
+   <td style="text-align:center;"> ADAMTS17 </td>
+   <td style="text-align:center;"> NM_139057:exon1:c.-20G&gt;C </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 182 </td>
+   <td style="text-align:center;"> SPTA1:NM_003126:exon40:c.5566-10A&gt;G </td>
+   <td style="text-align:center;"> 0.0040661 </td>
+   <td style="text-align:center;"> 8 </td>
+   <td style="text-align:center;"> 31 </td>
+   <td style="text-align:center;"> 0.07273 </td>
+   <td style="text-align:center;"> 0.0031 </td>
+   <td style="text-align:center;"> 3.57 </td>
+   <td style="text-align:center;"> [1.64-7.8] </td>
+   <td style="text-align:center;"> 0.85 </td>
+   <td style="text-align:center;"> SPTA1 </td>
+   <td style="text-align:center;"> NM_003126:exon40:c.5566-10A&gt;G </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 100 </td>
+   <td style="text-align:center;"> KIF1A:NM_004321:exon3:c.363+7A&gt;G </td>
+   <td style="text-align:center;"> 0.0042151 </td>
+   <td style="text-align:center;"> 33 </td>
+   <td style="text-align:center;"> 259 </td>
+   <td style="text-align:center;"> 0.30000 </td>
+   <td style="text-align:center;"> 0.0259 </td>
+   <td style="text-align:center;"> 1.79 </td>
+   <td style="text-align:center;"> [1.23-2.59] </td>
+   <td style="text-align:center;"> 0.95 </td>
+   <td style="text-align:center;"> KIF1A </td>
+   <td style="text-align:center;"> NM_004321:exon3:c.363+7A&gt;G </td>
+   <td style="text-align:center;"> 0.02 </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 188 </td>
+   <td style="text-align:center;"> STAG1:NM_005862:exon20:c.2108+4C&gt;T </td>
+   <td style="text-align:center;"> 0.0044875 </td>
+   <td style="text-align:center;"> 6 </td>
+   <td style="text-align:center;"> 18 </td>
+   <td style="text-align:center;"> 0.05455 </td>
+   <td style="text-align:center;"> 0.0018 </td>
+   <td style="text-align:center;"> 4.61 </td>
+   <td style="text-align:center;"> [1.82-11.64] </td>
+   <td style="text-align:center;"> 0.87 </td>
+   <td style="text-align:center;"> STAG1 </td>
+   <td style="text-align:center;"> NM_005862:exon20:c.2108+4C&gt;T </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 62 </td>
+   <td style="text-align:center;"> ERCC1:NM_202001:exon8:c.828C&gt;A(p.G276G) </td>
+   <td style="text-align:center;"> 0.0047315 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 7 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0007 </td>
+   <td style="text-align:center;"> 7.88 </td>
+   <td style="text-align:center;"> [2.3-26.99] </td>
+   <td style="text-align:center;"> 0.90 </td>
+   <td style="text-align:center;"> ERCC1 </td>
+   <td style="text-align:center;"> NM_202001:exon8:c.828C&gt;A(p.G276G) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 71 </td>
+   <td style="text-align:center;"> FLG:NM_002016:exon3:c.3037_3038delinsC(p.S1013Pfs*109) </td>
+   <td style="text-align:center;"> 0.0047315 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 7 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0007 </td>
+   <td style="text-align:center;"> 7.88 </td>
+   <td style="text-align:center;"> [2.3-26.99] </td>
+   <td style="text-align:center;"> 0.97 </td>
+   <td style="text-align:center;"> FLG </td>
+   <td style="text-align:center;"> NM_002016:exon3:c.3037_3038delinsC(p.S1013Pfs*109) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 130 </td>
+   <td style="text-align:center;"> NPHP4:NM_015102:exon3:c.274A&gt;G(p.N92D) </td>
+   <td style="text-align:center;"> 0.0047315 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 7 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0007 </td>
+   <td style="text-align:center;"> 7.88 </td>
+   <td style="text-align:center;"> [2.3-26.99] </td>
+   <td style="text-align:center;"> 0.90 </td>
+   <td style="text-align:center;"> NPHP4 </td>
+   <td style="text-align:center;"> NM_015102:exon3:c.274A&gt;G(p.N92D) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 160 </td>
+   <td style="text-align:center;"> PRKCSH:NM_002743:exon5:c.350+4C&gt;T </td>
+   <td style="text-align:center;"> 0.0047315 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 7 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0007 </td>
+   <td style="text-align:center;"> 7.88 </td>
+   <td style="text-align:center;"> [2.3-26.99] </td>
+   <td style="text-align:center;"> 0.95 </td>
+   <td style="text-align:center;"> PRKCSH </td>
+   <td style="text-align:center;"> NM_002743:exon5:c.350+4C&gt;T </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 9 </td>
+   <td style="text-align:center;"> ALG3:NM_005787:exon4:c.477C&gt;T(p.C159C) </td>
+   <td style="text-align:center;"> 0.0067202 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 8 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0008 </td>
+   <td style="text-align:center;"> 6.90 </td>
+   <td style="text-align:center;"> [2.07-22.96] </td>
+   <td style="text-align:center;"> 0.81 </td>
+   <td style="text-align:center;"> ALG3 </td>
+   <td style="text-align:center;"> NM_005787:exon4:c.477C&gt;T(p.C159C) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 120 </td>
+   <td style="text-align:center;"> MYH11:NM_002474:exon36:c.5165C&gt;T(p.S1722L) </td>
+   <td style="text-align:center;"> 0.0067202 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 8 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0008 </td>
+   <td style="text-align:center;"> 6.90 </td>
+   <td style="text-align:center;"> [2.07-22.96] </td>
+   <td style="text-align:center;"> 0.85 </td>
+   <td style="text-align:center;"> MYH11 </td>
+   <td style="text-align:center;"> NM_002474:exon36:c.5165C&gt;T(p.S1722L) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 147 </td>
+   <td style="text-align:center;"> PDE6A:NM_000440:exon9:c.1205C&gt;T(p.T402I) </td>
+   <td style="text-align:center;"> 0.0067202 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 8 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0008 </td>
+   <td style="text-align:center;"> 6.90 </td>
+   <td style="text-align:center;"> [2.07-22.96] </td>
+   <td style="text-align:center;"> 0.87 </td>
+   <td style="text-align:center;"> PDE6A </td>
+   <td style="text-align:center;"> NM_000440:exon9:c.1205C&gt;T(p.T402I) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 165 </td>
+   <td style="text-align:center;"> RAI1:NM_030665:exon3:c.2868T&gt;G(p.P956P) </td>
+   <td style="text-align:center;"> 0.0067202 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 8 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0008 </td>
+   <td style="text-align:center;"> 6.90 </td>
+   <td style="text-align:center;"> [2.07-22.96] </td>
+   <td style="text-align:center;"> 0.86 </td>
+   <td style="text-align:center;"> RAI1 </td>
+   <td style="text-align:center;"> NM_030665:exon3:c.2868T&gt;G(p.P956P) </td>
+   <td style="text-align:center;"> 0.34 </td>
+   <td style="text-align:center;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 3 </td>
+   <td style="text-align:center;"> ACADSB:NM_001609:exon9:c.1128+3_1128+8del </td>
+   <td style="text-align:center;"> 0.0074362 </td>
+   <td style="text-align:center;"> 16 </td>
+   <td style="text-align:center;"> 99 </td>
+   <td style="text-align:center;"> 0.14545 </td>
+   <td style="text-align:center;"> 0.0099 </td>
+   <td style="text-align:center;"> 2.25 </td>
+   <td style="text-align:center;"> [1.32-3.83] </td>
+   <td style="text-align:center;"> 0.84 </td>
+   <td style="text-align:center;"> ACADSB </td>
+   <td style="text-align:center;"> NM_001609:exon9:c.1128+3_1128+8del </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:center;"> ABCA12:NM_173076:exon47:c.6976G&gt;A(p.V2326I) </td>
+   <td style="text-align:center;"> 0.0082950 </td>
+   <td style="text-align:center;"> 6 </td>
+   <td style="text-align:center;"> 21 </td>
+   <td style="text-align:center;"> 0.05455 </td>
+   <td style="text-align:center;"> 0.0021 </td>
+   <td style="text-align:center;"> 3.95 </td>
+   <td style="text-align:center;"> [1.59-9.81] </td>
+   <td style="text-align:center;"> 0.86 </td>
+   <td style="text-align:center;"> ABCA12 </td>
+   <td style="text-align:center;"> NM_173076:exon47:c.6976G&gt;A(p.V2326I) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 128 </td>
+   <td style="text-align:center;"> NHP2:NM_017838:exon1:c.70T&gt;A(p.Y24N) </td>
+   <td style="text-align:center;"> 0.0084257 </td>
+   <td style="text-align:center;"> 10 </td>
+   <td style="text-align:center;"> 52 </td>
+   <td style="text-align:center;"> 0.09091 </td>
+   <td style="text-align:center;"> 0.0052 </td>
+   <td style="text-align:center;"> 2.66 </td>
+   <td style="text-align:center;"> [1.35-5.26] </td>
+   <td style="text-align:center;"> 0.81 </td>
+   <td style="text-align:center;"> NHP2 </td>
+   <td style="text-align:center;"> NM_017838:exon1:c.70T&gt;A(p.Y24N) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 169 </td>
+   <td style="text-align:center;"> SCN4A:NM_000334:exon17:c.3238A&gt;G(p.M1080V) </td>
+   <td style="text-align:center;"> 0.0091925 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 9 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0009 </td>
+   <td style="text-align:center;"> 6.13 </td>
+   <td style="text-align:center;"> [1.88-19.96] </td>
+   <td style="text-align:center;"> 0.82 </td>
+   <td style="text-align:center;"> SCN4A </td>
+   <td style="text-align:center;"> NM_000334:exon17:c.3238A&gt;G(p.M1080V) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 28 </td>
+   <td style="text-align:center;"> CCDC88C:NM_001080414:exon21:c.3640G&gt;A(p.G1214S) </td>
+   <td style="text-align:center;"> 0.0094248 </td>
+   <td style="text-align:center;"> 10 </td>
+   <td style="text-align:center;"> 53 </td>
+   <td style="text-align:center;"> 0.09091 </td>
+   <td style="text-align:center;"> 0.0053 </td>
+   <td style="text-align:center;"> 2.61 </td>
+   <td style="text-align:center;"> [1.32-5.16] </td>
+   <td style="text-align:center;"> 0.86 </td>
+   <td style="text-align:center;"> CCDC88C </td>
+   <td style="text-align:center;"> NM_001080414:exon21:c.3640G&gt;A(p.G1214S) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 65 </td>
+   <td style="text-align:center;"> EVC:NM_153717:exon7:c.858G&gt;A(p.S286S) </td>
+   <td style="text-align:center;"> 0.0121893 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 10 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0010 </td>
+   <td style="text-align:center;"> 5.52 </td>
+   <td style="text-align:center;"> [1.73-17.63] </td>
+   <td style="text-align:center;"> 0.81 </td>
+   <td style="text-align:center;"> EVC </td>
+   <td style="text-align:center;"> NM_153717:exon7:c.858G&gt;A(p.S286S) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 146 </td>
+   <td style="text-align:center;"> PCK2:NM_004563:exon4:c.494G&gt;A(p.G165D) </td>
+   <td style="text-align:center;"> 0.0121893 </td>
+   <td style="text-align:center;"> 4 </td>
+   <td style="text-align:center;"> 10 </td>
+   <td style="text-align:center;"> 0.03636 </td>
+   <td style="text-align:center;"> 0.0010 </td>
+   <td style="text-align:center;"> 5.52 </td>
+   <td style="text-align:center;"> [1.73-17.63] </td>
+   <td style="text-align:center;"> 0.94 </td>
+   <td style="text-align:center;"> PCK2 </td>
+   <td style="text-align:center;"> NM_004563:exon4:c.494G&gt;A(p.G165D) </td>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> NA </td>
+  </tr>
+</tbody>
+</table></div>
+</body>
+</html>

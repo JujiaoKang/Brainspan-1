@@ -1,0 +1,169 @@
+---
+title: "Autism-Part3"
+author: "chenhy"
+date: "2020/6/22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r library packages, message=FALSE, warning=FALSE, include=FALSE}
+library(NetBID2)
+library(factoextra) #for cluster
+library(tidyverse)
+library(stringr)
+library(cluster)
+```
+
+```{r get_drivers, message=FALSE, warning=FALSE, include=FALSE}
+## input GSE data
+gse_info <- openxlsx::read.xlsx("/cluster/home/chenhy/project/neuron_drivers_landscape/data/Autism_info.xlsx",1)
+gse_info_select <- gse_info[which(gse_info$GSE_code %in% c("GSE113834","GSE28521","GSE64018")),c("GSE_code","GPL","Study.type","Case","Control","Age","Race","Tissue")]
+gse_list <- list()
+for (i in 1:nrow(gse_info_select)) {
+  project_main_dir <- "/cluster/home/chenhy/project/neuron_drivers_landscape/data/"
+  project_name <- sprintf('Autism_%s_%s',gse_info_select[i,"GSE_code"],gse_info_select[i,"GPL"])
+  analysis.par <- list()
+  analysis.par$out.dir.DATA <- file.path(project_main_dir,project_name,"DATA/")
+  NetBID.loadRData(analysis.par=analysis.par,step='ms-tab')
+  gse_list[[gse_info_select[i,"GSE_code"]]] <-  analysis.par
+  rm(analysis.par)
+}
+```
+
+
+## EWAS for Autism phenotype
+Significant genes
+```{r sig_genes, echo=TRUE}
+gene_ttest <- read.csv("/cluster/home/chenhy/project/autism/result/gene_ttest.csv",header = T,stringsAsFactors = F) 
+autism_gene <- read.table(file = "/cluster/home/chenhy/project/neuron_drivers_landscape/data/C1510586_disease_gda_summary.tsv",sep = "\t",quote = "",header = T,stringsAsFactors = F)
+sfari_gene <- read.csv(file = "/cluster/home/chenhy/project/neuron_drivers_landscape/data/SFARI-Gene_genes_05-19-2020release_06-30-2020export.csv",stringsAsFactors = F)
+gene_ttest <- gene_ttest %>% left_join(dplyr::select(autism_gene,Gene,Score_gda) %>% rename(Dis_gene=Gene),by="Dis_gene") %>% left_join(dplyr::select(sfari_gene,gene.symbol,gene.score) %>% rename(Dis_gene=gene.symbol),by="Dis_gene")
+#out2excel(gene_ttest,out.xlsx = "/cluster/home/chenhy/project/autism/result/sig_gene.xlsx")
+gene_ttest_select <- gene_ttest %>% .[which(.$Percentage_of_sig_from_permutation > 0),] %>% .[,c(1:3,6:8,19:20)] %>% unique() %>% .[order(.$p),]
+out2excel(gene_ttest_select,out.xlsx = "/cluster/home/chenhy/project/autism/result/gene_ttest_select.xlsx")
+if(nrow(gene_ttest_select)<20){
+kableExtra::kable(gene_ttest_select,align = "c") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  kableExtra::scroll_box(width = "100%", height = "100%")
+}else{
+  kableExtra::kable(gene_ttest_select,align = "c") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  kableExtra::scroll_box(width = "100%", height = "500px")
+}
+```
+
+Significant variant
+```{r sig_variant, echo=TRUE}
+variant_final <- read.csv("/cluster/home/chenhy/project/autism/result/variant_fisher.csv",header = T,stringsAsFactors = F) %>% .[,c(1:3,5:10)] %>% unique() %>% .[-which(.$Odds_ratio<1),]
+variant_final$Gene <- stringr::str_split(variant_final$Dis_variant,":",simplify=T)[,1]
+variant_final$HGVS <- stringr::str_c(stringr::str_split(variant_final$Dis_variant,":",simplify=T)[,2],":",stringr::str_split(variant_final$Dis_variant,":",simplify=T)[,3],":",stringr::str_split(variant_final$Dis_variant,":",simplify=T)[,4])
+variant_final <- variant_final %>% left_join(dplyr::select(autism_gene,Gene,Score_gda),by="Gene") %>% left_join(dplyr::select(sfari_gene,gene.symbol,gene.score) %>% rename(Gene=gene.symbol),by="Gene")
+#out2excel(variant_final,out.xlsx = "/cluster/home/chenhy/project/autism/result/sig_variant.xlsx")
+variant_select <- variant_final %>% .[!is.na(.$Percentage_of_sig_from_permutation),] %>% mutate(Percentage_of_sig_from_permutation=Percentage_of_sig_from_permutation*10) %>%  .[which(.$Percentage_of_sig_from_permutation > 0),] %>% unique() %>% .[order(.$p),]
+out2excel(variant_select,out.xlsx = "/cluster/home/chenhy/project/autism/result/variant_select.xlsx")
+if(nrow(gene_ttest_select)<20){
+kableExtra::kable(variant_select,align = "c") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  kableExtra::scroll_box(width = "100%", height = "100%")
+}else{
+  kableExtra::kable(variant_select,align = "c") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  kableExtra::scroll_box(width = "100%", height = "500px")
+}
+```
+```{r qqplot, echo=F, message=FALSE, warning=FALSE,fig.width=9}
+#qqnorm(variant_final$log_p);qqline(variant_final$log_p,probs = c(0.025,0.975))
+```
+
+### Intersection between EWAS + up/down list
+
+```{r ewas_overlap_sig_gene_driver, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+ewas_gene <- gene_ttest$Dis_gene
+ewas_gene <- unique(variant_final$Gene)
+ewas_gene <- union(gene_ttest$Dis_gene,variant_final$Gene)
+source("get_sig_genes.R")
+GSE113834_up <- gse113834_all_gene[which(gse113834_all_gene$logFC > 0),"ID"]
+GSE28521_up <- gse28521_all_gene[which(gse28521_all_gene$logFC > 0),"ID"]
+GSE64018_up <- gse64018_all_gene[which(gse64018_all_gene$logFC > 0),"ID"]
+GSE113834_down <- gse113834_all_gene[which(gse113834_all_gene$logFC < 0),"ID"]
+GSE28521_down <- gse28521_all_gene[which(gse28521_all_gene$logFC < 0),"ID"]
+GSE64018_down <- gse64018_all_gene[which(gse64018_all_gene$logFC < 0),"ID"]
+intersect_gene <- c(Reduce(union,list(v1=intersect(GSE113834_up,GSE28521_up),
+                                      v2=intersect(GSE113834_up,GSE64018_up),
+                                      v3=intersect(GSE28521_up,GSE64018_up))),
+                                  Reduce(union,list(v1=intersect(GSE113834_down,GSE28521_down),
+                                      v2=intersect(GSE113834_down,GSE64018_down),
+                                      v3=intersect(GSE28521_down,GSE64018_down))))
+mark_gene1 <- intersect(intersect_gene,ewas_gene)
+
+source("get_sig_drivers.R")
+GSE113834_up <- gse113834_all_driver[which(gse113834_all_driver$logFC.ASD.Vs.TD_DA > 0),"originalID_label"]
+GSE28521_up <- gse28521_all_driver[which(gse28521_all_driver$logFC.ASD.Vs.TD_DA > 0),"originalID_label"]
+GSE64018_up <- gse64018_all_driver[which(gse64018_all_driver$logFC.ASD.Vs.TD_DA > 0),"originalID_label"]
+GSE113834_down <- gse113834_all_driver[which(gse113834_all_driver$logFC.ASD.Vs.TD_DA < 0),"originalID_label"]
+GSE28521_down <- gse28521_all_driver[which(gse28521_all_driver$logFC.ASD.Vs.TD_DA < 0),"originalID_label"]
+GSE64018_down <- gse64018_all_driver[which(gse64018_all_driver$logFC.ASD.Vs.TD_DA < 0),"originalID_label"]
+intersect_driver <- c(Reduce(union,list(v1=intersect(GSE113834_up,GSE28521_up),
+                                      v2=intersect(GSE113834_up,GSE64018_up),
+                                      v3=intersect(GSE28521_up,GSE64018_up))),
+                                  Reduce(union,list(v1=intersect(GSE113834_down,GSE28521_down),
+                                      v2=intersect(GSE113834_down,GSE64018_down),
+                                      v3=intersect(GSE28521_down,GSE64018_down))))
+mark_gene2 <- intersect(str_split(intersect_driver,"_",simplify = T),ewas_gene)
+mark_gene <- union(mark_gene1,mark_gene2)
+gene_ttest_ewas <- gene_ttest_select[which(gene_ttest_select$Dis_gene %in% mark_gene),]
+variant_ewas <- variant_final[which(variant_final$Gene %in% mark_gene),]
+out2excel(gene_ttest_ewas,out.xlsx = "/cluster/home/chenhy/project/autism/result/gene_ttest_ewas.xlsx")
+out2excel(variant_ewas,out.xlsx = "/cluster/home/chenhy/project/autism/result/variant_ewas.xlsx")
+```
+
+### visualize the network structure of the selected driver:GNAI2
+```{r get_driver_network, echo=FALSE, message=FALSE, warning=FALSE}
+use_driver <- "GNAI2_SIG"
+# Define edges of the network
+edge_score <- analysis.par$merge.network$target_list[[use_driver]]$MI*sign(analysis.par$merge.network$target_list[[use_driver]]$spearman)
+names(edge_score) <- analysis.par$merge.network$target_list[[use_driver]]$target
+# Draw sub-network structure of selected driver
+ms_tab <- gse_list[["GSE28521"]]$final_ms_tab
+comp_name <- 'ASD.Vs.TD'
+draw.targetNet(source_label=ms_tab[use_driver,'gene_label'],source_z=ms_tab[use_driver,sprintf('Z.%s_DA',comp_name)],edge_score = edge_score,pdf_file='/cluster/home/chenhy/project/Brainspan/result/plot/targetNet_out.pdf',label_cex = 1.5,n_layer=4, alphabetical_order=TRUE)
+
+draw.targetNet(source_label=ms_tab[use_driver,'gene_label'],source_z=ms_tab[use_driver,sprintf('Z.%s_DA',comp_name)],edge_score = edge_score,pdf_file=sprintf('%s/targetNet_in.pdf','/cluster/home/chenhy/project/Brainspan/result/plot'),label_cex = 1.5,arrow_direction = 'in',n_layer=6)
+
+# Draw sub-network structure for two selected drivers
+# Use the first two drivers in the driver list as an example
+use_driver2 <- "TBP_SIG"
+edge_score2 <- analysis.par$merge.network$target_list[[use_driver2]]$MI*sign(analysis.par$merge.network$target_list[[use_driver2]]$spearman)
+names(edge_score2) <- analysis.par$merge.network$target_list[[use_driver2]]$target
+use_genes <- unique(analysis.par$merge.network$network_dat$target.symbol)
+draw.targetNet.TWO(source1_label=ms_tab[use_driver,'gene_label'],edge_score1 = edge_score,
+                   source2_label=ms_tab[use_driver2,'gene_label'],edge_score2 = edge_score2,
+                   source1_z=ms_tab[use_driver,sprintf('Z.%s_DA',comp_name)],source2_z=ms_tab[use_driver2,sprintf('Z.%s_DA',comp_name)],pdf_file=sprintf('%s/targetNetTWO.pdf','/cluster/home/chenhy/project/Brainspan/result/plot'),total_possible_target=use_genes,show_test=TRUE,label_cex = 1.5,n_layer=1,source_cex=0.6,alphabetical_order=FALSE)
+
+# To show the overlapped target genes from two selected drivers
+test.targetNet.overlap(source1_label=ms_tab[use_driver,'gene_label'],source2_label=ms_tab[use_driver2,'gene_label'],target1 = names(edge_score),target2 = names(edge_score2),total_possible_target=use_genes)
+
+```
+
+
+### Function enrichment of EWAS sig genes
+
+```{r sig_genes_enrichment, echo=TRUE, message=FALSE, warning=FALSE,fig.width=9}
+gs.preload(use_spe='Homo sapiens',update=FALSE)
+use_gene <- read.table(file = "/cluster/apps/refseq/Gene_panel/Clear_seq/gene.lst", col.names = "Dis_gene")
+ench_up <- funcEnrich.Fisher(input_list=gene_ttest$Dis_gene,
+  bg_list=use_gene$Dis_gene,
+  use_gs=c('H','C5'),
+  Pv_thre=0.1,Pv_adj = 'none')
+draw.funcEnrich.cluster(funcEnrich_res=ench_up,top_number=20,gs_cex = 1,
+  gene_cex=1,pv_cex=0.8,
+  cluster_gs=TRUE,cluster_gene = TRUE)
+```
+
+
+
+
+

@@ -1,0 +1,55 @@
+datMeta <- datMeta.CTX
+datExpr <- datExpr.CTX
+## Get the metadata
+biolrep <- as.numeric(as.factor(datMeta[,"BrainID"]))
+condition <- 2-as.numeric(as.factor(datMeta[,"ASD.CTL"]))
+age <- as.numeric(datMeta[,"Age"])
+sex <- as.numeric(as.factor(datMeta[,"Sex"]))-1
+region <- as.numeric(as.factor(datMeta[,"RegionID"]))-1
+batch2 <- as.numeric(datMeta[,"SeqBatch"]=="batch2")
+batch3 <- as.numeric(datMeta[,"SeqBatch"]=="batch3")
+RIN <- as.numeric(datMeta[,"RIN"])
+bank <- as.numeric(as.factor(datMeta[,"BrainBank"]))-1
+seqStatPC1 <- as.numeric(topPC.datSeq[,1])
+seqStatPC2 <- as.numeric(topPC.datSeq[,2])
+
+if (comp == 3 | comp == 4) {
+  bank <- batch2 <- batch3 <- rep(0,length(batch2)) ## For the dup15q comparison, we don't use batch or brain bank as covariates because they are confounded with diagnosis. We provide an analysis against other control samples to demonstrate that the results are identical when using the set of CTL samples used in the idiopathic ASD analysis.
+}
+
+varnames <- c("condition","age","sex","region","batch2","batch3","RIN","bank","seqStatPC1","seqStatPC2")
+
+varmat <- cbind(condition, age, sex, region,batch2,batch3,RIN,bank,seqStatPC1,seqStatPC2)
+varkeep <- rep(TRUE,length(varnames))
+for (i in 1:length(varnames)) {
+  if (length(table(varmat[,i])) == 1) {
+    varkeep[i] <- FALSE
+  }
+}
+
+Bmat <- SEmat <- Pmat <- matrix(NA,nrow=nrow(datExpr),ncol=length(varnames))[,varkeep]
+rownames(Bmat) <- rownames(SEmat) <- rownames(Pmat) <- rownames(datExpr)
+colnames(Bmat) <- paste("beta",varnames,sep=".")[varkeep]
+colnames(SEmat) <- paste("SE",varnames,sep=".")[varkeep]
+colnames(Pmat) <- paste("p",varnames,sep=".")[varkeep]
+
+for (i in 1:nrow(datExpr)) {
+  i <- 1
+  if (i %% 1000 == 0) {cat(paste("On gene ",i,"\n",sep=""))}
+  thisExpr <- as.numeric(datExpr[i,])
+  expression <- paste("lme(thisExpr ~ ",paste(colnames(varmat)[varkeep],collapse=" + "),", rand = ~1|biolrep, data = thisdat)",sep="")
+  designmatrix <- data.frame(thisExpr, varmat[,varkeep], biolrep)
+  
+  lme1.out <- try(runlme(designmatrix,expression),silent=F);
+  
+  if (substr(lme1.out[1],1,5)!="Error") {
+    tabOut <- lme1.out$tTable
+    Bmat[i,] <- tabOut[-c(1),"Value"]
+    SEmat[i,] <- tabOut[-c(1),"Std.Error"]
+    Pmat[i,] <- tabOut[-c(1),"p-value"]
+  } else {
+    cat('Error in LME of Gene',rownames(datExpr)[i],"id",'\n')
+    cat('Setting P-value=NA,Beta value=NA, and SE=NA\n');
+    Bmat[i,] <- SEmat[i,] <- Pmat[i,] <- NA;
+  }
+}

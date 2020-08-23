@@ -1,0 +1,58 @@
+load("/cluster/home/chenhy/project/Brainspan/db/brainspan.RData")
+ac_mat_drivers <- rownames(ac_mat)
+select_driver <- sample(ac_mat_drivers,50)
+select_driver <- str_split(select_driver,"_",simplify = T)[,1]
+draw.heatmap(mat=ac_mat,use_genes=select_driver,
+             use_gene_label=select_driver,
+             use_samples=colnames(ac_mat),
+             phenotype_info=phe,use_phe=c('stage'),
+             main='Activity for up regulated drivers',scale='row',
+             show_column_names = FALSE,
+             cluster_rows=TRUE,cluster_columns=FALSE,
+             clustering_distance_rows='euclidean',
+             clustering_distance_columns='euclidean',
+             clustering_method_rows = "complete",
+             row_names_gp = gpar(fontsize = 10),
+             show_row_names = F,
+             col=circlize::colorRamp2(breaks=seq(-2,2,length.out=10),
+                                      colors=rev(brewer.pal(10,'Spectral')))
+)
+
+
+my_ac_mat <- exprs(analysis.par$merge.ac.eset)
+ac_mat_drivers <- rownames(my_ac_mat)
+select_driver <- ac_mat_drivers[which(str_split(ac_mat_drivers,"_",simplify = T)[,1] %in% select_driver)]
+draw.heatmap(mat=my_ac_mat,use_genes=select_driver,
+             use_gene_label=select_driver,
+             use_samples=colnames(my_ac_mat),
+             phenotype_info=phe,use_phe=c('stage'),
+             main='Activity for up regulated drivers',scale='row',
+             show_column_names = FALSE,
+             cluster_rows=TRUE,cluster_columns=FALSE,
+             clustering_distance_rows='euclidean',
+             clustering_distance_columns='euclidean',
+             clustering_method_rows = "complete",
+             row_names_gp = gpar(fontsize = 10),
+             show_row_names = F,
+             col=circlize::colorRamp2(breaks=seq(-2,2,length.out=10),
+                                      colors=rev(brewer.pal(10,'Spectral')))
+)
+
+expr_mat <- exprs(analysis.par$cal.eset) %>% .[which(rownames(.) %in% str_split(ac_mat_drivers,"_",simplify = T)[,1]),]
+ac_mat_genes <- rownames(expr_mat)
+select_genes <- sample(ac_mat_genes,50)
+draw.heatmap(mat=expr_mat,use_genes=select_genes,
+             use_gene_label=select_genes,
+             use_samples=colnames(expr_mat),
+             phenotype_info=phe,use_phe=c('stage'),
+             main='Activity for up regulated drivers',scale='row',
+             show_column_names = FALSE,
+             cluster_rows=TRUE,cluster_columns=FALSE,
+             clustering_distance_rows='euclidean',
+             clustering_distance_columns='euclidean',
+             clustering_method_rows = "complete",
+             row_names_gp = gpar(fontsize = 10),
+             show_row_names = F,
+             col=circlize::colorRamp2(breaks=seq(-2,2,length.out=10),
+                                      colors=rev(brewer.pal(10,'Spectral')))
+)
